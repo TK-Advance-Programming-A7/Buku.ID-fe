@@ -5,17 +5,14 @@ import React, { useState, FormEvent, ChangeEvent } from "react";
 import Toast from "./toast";
 import Link from "next/link";
 
-interface FormLoginProps {
-  cookie: any;
-}
-
-const FormLogin: React.FC<FormLoginProps> = ({ cookie }) => {
+const FormLogin: React.FC = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [toast, setToast] = useState<{
     message: string;
     type: "success" | "error";
   } | null>(null);
+
   const router = useRouter();
 
   const validateEmail = (email: string): boolean => {
@@ -50,10 +47,7 @@ const FormLogin: React.FC<FormLoginProps> = ({ cookie }) => {
 
       if (response.ok) {
         const { token } = await response.json();
-        cookie.set("token", token, {
-          path: "/",
-          maxAge: 3600,
-        });
+        localStorage.setItem("token", token);
         router.push("/");
       } else {
         const errorData = await response.json();
@@ -63,8 +57,9 @@ const FormLogin: React.FC<FormLoginProps> = ({ cookie }) => {
         });
       }
     } catch (error) {
+      console.error(error);
       setToast({
-        message: "An error occurred. Please try again.",
+        message: "An error occurred. Please try again. Error",
         type: "error",
       });
     }
