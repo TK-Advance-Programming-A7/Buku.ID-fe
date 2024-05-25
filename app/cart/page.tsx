@@ -113,7 +113,7 @@ const CartPage: React.FC = () => {
                                                         </button>
                                                     </div>
                                                 </td>
-                                                <td className="py-4 text-black">{formatRupiah(item.price)}</td>
+                                                <td className="py-4 text-black">{formatRupiah(item.totalPrice)}</td>
                                                 <td className="py-4 text-black">
                                                     <button type="button" className="ml-2 text-sm px-2 py-1"
                                                             onClick={() => handleDeleteItem(order.idOrder, item.idOrderItem)}>
