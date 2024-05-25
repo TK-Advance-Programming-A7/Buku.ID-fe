@@ -59,7 +59,7 @@ const BookPage: React.FC = () => {
 
     return (
         <div className="bg-gray-100 min-h-screen flex flex-col items-center py-8">
-            <div className="w-full fixed top-0 bg-white shadow-md py-4">
+            <div className="w-full fixed top-0 bg-white shadow-md py-4 z-50">
                 <div className="container mx-auto px-4 flex justify-between items-center">
                     <h1 className="text-2xl font-semibold text-black">All Books</h1>
                     <input
@@ -72,6 +72,11 @@ const BookPage: React.FC = () => {
                 </div>
             </div>
             <div className="container mx-auto px-4 mt-20">
+                {filteredBooks.length === 0 && (
+                    <div className="text-center text-black text-lg mt-8 font-bold">
+                        Sorry, we can't find what you're looking for
+                    </div>
+                )}
                 <div className="flex flex-wrap gap-4 justify-center">
                     {currentBooks.map(book => (
                         <div
@@ -89,23 +94,25 @@ const BookPage: React.FC = () => {
                         </div>
                     ))}
                 </div>
-            </div>
-            <div className="flex justify-center items-center mt-8">
-                <button
-                    onClick={handlePreviousPage}
-                    disabled={currentPage === 1}
-                    className={`px-4 py-2 mx-2 ${currentPage === 1 ? 'bg-gray-300 cursor-not-allowed' : 'bg-black text-white hover:bg-black-700'} rounded`}
-                >
-                    Previous
-                </button>
-                <span className="px-4 py-2 mx-2 bg-white text-black rounded">{currentPage}</span>
-                <button
-                    onClick={handleNextPage}
-                    disabled={currentPage === totalPages}
-                    className={`px-4 py-2 mx-2 ${currentPage === totalPages ? 'bg-gray-300 cursor-not-allowed' : 'bg-black text-white hover:bg-black-700'} rounded`}
-                >
-                    Next
-                </button>
+                {filteredBooks.length >= 20 && (
+                    <div className="flex justify-center items-center mt-8">
+                        <button
+                            onClick={handlePreviousPage}
+                            disabled={currentPage === 1}
+                            className={`px-4 py-2 mx-2 ${currentPage === 1 ? 'bg-gray-300 cursor-not-allowed' : 'bg-black text-white hover:bg-black-700'} rounded`}
+                        >
+                            Previous
+                        </button>
+                        <span className="px-4 py-2 mx-2 bg-white text-black rounded">{currentPage}</span>
+                        <button
+                            onClick={handleNextPage}
+                            disabled={currentPage === totalPages}
+                            className={`px-4 py-2 mx-2 ${currentPage === totalPages ? 'bg-gray-300 cursor-not-allowed' : 'bg-black text-white hover:bg-black-700'} rounded`}
+                        >
+                            Next
+                        </button>
+                    </div>
+                )}
             </div>
         </div>
     );
