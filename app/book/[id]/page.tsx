@@ -13,6 +13,7 @@ const BookDetailPage: React.FC = () => {
 
     useEffect(() => {
         const fetchBook = async () => {
+            setLoading(true);
             if (id) {
                 try {
                     const response = await fetch(`${baseURL}/api/books/${id}`);
@@ -38,6 +39,8 @@ const BookDetailPage: React.FC = () => {
         return <div className="bg-gray-100 min-h-screen flex items-center justify-center">Book not found</div>;
     }
 
+    const formattedDate = new Date(book.publishDate).toLocaleDateString();
+
     return (
         <div className="bg-gray-100 min-h-screen py-8 flex items-center justify-center">
             <div className="container mx-auto px-4 bg-white p-6 rounded-lg shadow-md">
@@ -48,7 +51,7 @@ const BookDetailPage: React.FC = () => {
                         <p className="text-gray-700 mb-2"><span className="font-semibold">Author:</span> {book.author}</p>
                         <p className="text-gray-700 mb-2"><span className="font-semibold">Publisher:</span> {book.publisher}</p>
                         <p className="text-gray-700 mb-2"><span className="font-semibold">ISBN:</span> {book.isbn}</p>
-                        <p className="text-gray-700 mb-2"><span className="font-semibold">Publish Date:</span> {book.publishDate}</p>
+                        <p className="text-gray-700 mb-2"><span className="font-semibold">Publish Date:</span> {formattedDate}</p>
                         <p className="text-gray-700 mb-2"><span className="font-semibold">Category:</span> {book.category}</p>
                         <p className="text-gray-700 mb-2"><span className="font-semibold">Pages:</span> {book.page}</p>
                         <p className="text-gray-700 mb-2"><span className="font-semibold">Price:</span> ${book.price.toFixed(2)}</p>
