@@ -1,8 +1,11 @@
+"use client";
+
 import { useRouter } from "next/navigation";
 import React, { ChangeEvent, FormEvent, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Toast from "./toast";
+import Link from "next/link";
 
 const FormRegister = () => {
   const router = useRouter();
@@ -130,7 +133,7 @@ const FormRegister = () => {
             required
             className={`relative block w-full px-3 py-2 border shadow-sm ${
               errors.fullName ? "border-red-500" : "border-gray-300"
-            } placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm`}
+            } placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-gray-500 focus:border-gray-500 focus:z-10 sm:text-sm`}
             placeholder="Full Name"
             value={formData.fullName}
             onChange={handleChange}
@@ -151,7 +154,7 @@ const FormRegister = () => {
             required
             className={`relative block w-full px-3 py-2 border shadow-sm ${
               errors.email ? "border-red-500" : "border-gray-300"
-            } placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm`}
+            } placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-gray-500 focus:border-gray-500 focus:z-10 sm:text-sm`}
             placeholder="Email address"
             value={formData.email}
             onChange={handleChange}
@@ -172,7 +175,7 @@ const FormRegister = () => {
             required
             className={`relative block w-full px-3 py-2 border shadow-sm ${
               errors.password ? "border-red-500" : "border-gray-300"
-            } placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm`}
+            } placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-gray-500 focus:border-gray-500 focus:z-10 sm:text-sm`}
             placeholder="Password"
             value={formData.password}
             onChange={handleChange}
@@ -193,7 +196,7 @@ const FormRegister = () => {
               errors.role ? "border-red-500" : "border-gray-300"
             } ${
               formData.role == "" ? "text-gray-500" : "text-gray-900"
-            } focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm`}
+            } focus:outline-none focus:ring-gray-500 focus:border-gray-500 focus:z-10 sm:text-sm`}
             value={formData.role}
             onChange={handleChange}
           >
@@ -223,7 +226,7 @@ const FormRegister = () => {
               errors.gender ? "border-red-500" : "border-gray-300"
             } ${
               formData.gender == "" ? "text-gray-500" : "text-gray-900"
-            } focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm`}
+            } focus:outline-none focus:ring-gray-500 focus:border-gray-500 focus:z-10 sm:text-sm`}
             value={formData.gender}
             onChange={handleChange}
           >
@@ -250,7 +253,7 @@ const FormRegister = () => {
             required
             className={`relative block w-full px-3 py-2 border shadow-sm ${
               errors.phone ? "border-red-500" : "border-gray-300"
-            } placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm`}
+            } placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-gray-500 focus:border-gray-500 focus:z-10 sm:text-sm`}
             placeholder="Phone Number"
             value={formData.phone}
             onChange={handleChange}
@@ -270,7 +273,7 @@ const FormRegister = () => {
             required
             className={`relative block w-full px-3 py-2 border ${
               errors.bio ? "border-red-500" : "border-gray-300"
-            } placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm resize-none`}
+            } placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-gray-500 focus:border-gray-500 focus:z-10 sm:text-sm resize-none`}
             placeholder="Bio"
             value={formData.bio}
             onChange={handleChange}
@@ -284,7 +287,7 @@ const FormRegister = () => {
       <div>
         <button
           type="submit"
-          className="relative flex justify-center w-full px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md group hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          className="relative flex justify-center w-full px-4 py-2 text-sm font-medium text-white bg-gray-600 border border-transparent rounded-md group hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
         >
           Register
         </button>
@@ -292,12 +295,12 @@ const FormRegister = () => {
       <div className="text-sm text-center text-gray-900">
         <p>
           Already have an account?{" "}
-          <a
+          <Link
             href="/login"
-            className="font-medium text-indigo-600 hover:text-indigo-500"
+            className="font-medium text-gray-600 hover:text-gray-500 underline"
           >
             Sign in
-          </a>
+          </Link>
         </p>
       </div>
       {toast && (

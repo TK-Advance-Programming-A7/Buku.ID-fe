@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import React, { useState, FormEvent, ChangeEvent } from "react";
 import Toast from "./toast";
+import Link from "next/link";
 
 interface FormLoginProps {
   cookie: any;
@@ -95,7 +96,7 @@ const FormLogin: React.FC<FormLoginProps> = ({ cookie }) => {
             type="email"
             autoComplete="email"
             required
-            className="relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+            className="relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-gray-500 focus:border-gray-500 focus:z-10 sm:text-sm"
             placeholder="Email address"
             onChange={handleEmailChange}
           />
@@ -110,7 +111,7 @@ const FormLogin: React.FC<FormLoginProps> = ({ cookie }) => {
             type="password"
             autoComplete="current-password"
             required
-            className="relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+            className="relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-gray-500 focus:border-gray-500 focus:z-10 sm:text-sm"
             placeholder="Password"
             onChange={handlePasswordChange}
           />
@@ -120,10 +121,21 @@ const FormLogin: React.FC<FormLoginProps> = ({ cookie }) => {
       <div>
         <button
           type="submit"
-          className="relative flex justify-center w-full px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md group hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          className="relative flex justify-center w-full px-4 py-2 text-sm font-medium text-white bg-gray-600 border border-transparent rounded-md group hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
         >
           Sign in
         </button>
+      </div>
+      <div className="text-sm text-center text-gray-900">
+        <p>
+          Dont have an account?{" "}
+          <Link
+            href="/register"
+            className="font-medium text-gray-600 hover:text-gray-500 underline"
+          >
+            Sign up
+          </Link>
+        </p>
       </div>
       {toast && (
         <Toast

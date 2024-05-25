@@ -9,7 +9,7 @@ const Footer = () => {
           <div className="flex-1 mb-6 text-black">
             <Link
               className="text-gray-900 no-underline hover:no-underline font-bold text-2xl lg:text-4xl"
-              href="#"
+              href="/"
             >
               Buku.ID
             </Link>
