@@ -1,3 +1,4 @@
+import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
 const FormRegister = () => {
@@ -12,6 +13,7 @@ const FormRegister = () => {
   });
 
   const [errors, setErrors] = useState<any>({});
+  const router = useRouter();
 
   const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -56,11 +58,28 @@ const FormRegister = () => {
     });
   };
 
-  const handleSubmit = (e: { preventDefault: () => void }) => {
+  const handleSubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
     if (validateForm()) {
-      console.log("Form submitted", formData);
-      // Handle form submission logic here
+      try {
+        const response = await fetch(
+          "http://localhost:8080/api/auth/signup",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(formData),
+          }
+        );
+        if (response.ok) {
+          const data = await response.json();
+          console.log(data);
+          router.push("/login");
+        }
+      } catch (error) {
+        console.error("An unexpected error happened:", error);
+      }
     }
   };
 
