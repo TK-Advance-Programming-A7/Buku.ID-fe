@@ -14,17 +14,6 @@ const Login = () => {
           </h2>
         </div>
         <FormLogin cookie={cookieStore} />
-        <div className="flex items-center justify-between">
-          <p className="text-black">
-            Dont have an account?{" "}
-            <Link
-              href="#"
-              className="underline text-indigo-600 hover:text-indigo-500"
-            >
-              Sign up
-            </Link>
-          </p>
-        </div>
       </div>
     </div>
   );
