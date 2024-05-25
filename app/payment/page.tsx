@@ -6,7 +6,7 @@ import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { Order, OrderItem } from './types';
 import axios from "axios";
 
-const HistoryPage: React.FC = () => {
+const PaymentPage: React.FC = () => {
     const [orders, setOrders] = useState<Order[]>([]);
 
     const baseURL = 'http://localhost:8080';
@@ -118,7 +118,7 @@ const HistoryPage: React.FC = () => {
                                     <div className="flex flex-col md:flex-row items-start mb-4">
                                         <div className="flex-grow">
                                             <button
-                                                className="border rounded-md py-2 px-4 ml-2 text-red-500"
+                                                className="border rounded-md py-2 px-4 ml-2 bg-red-500"
                                                 onClick={() => handleCancelOrder(order.idOrder)}
                                                 type="button" // Specify type as button
                                             >
@@ -127,7 +127,7 @@ const HistoryPage: React.FC = () => {
                                         </div>
                                         <div className="flex items-start">
                                             <button
-                                                className="border rounded-md py-2 px-4 ml-2 text-green-500"
+                                                className="border rounded-md py-2 px-4 ml-2 bg-green-500"
                                                 onClick={() => handleNextStatus(order.idOrder)}
                                                 type="submit" // Specify type as button
                                             >
@@ -146,6 +146,6 @@ const HistoryPage: React.FC = () => {
     );
 };
 
-export default HistoryPage;
+export default PaymentPage;
 
 
