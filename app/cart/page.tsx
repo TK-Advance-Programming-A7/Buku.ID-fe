@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { Order, OrderItem } from './types';
+import { Book } from '@/app/book/types';
 import CartSummary from '@/app/components/CartSummary';
 import axios from "axios";
 
@@ -14,7 +15,7 @@ const CartPage: React.FC = () => {
 
     const fetchOrders = async () => {
         try {
-            const userId = 123; // Example user ID
+            const userId = "123"; // Example user ID
             const status = "Waiting Checkout";
             const response = await axios.get(`${baseURL}/api/v1/order/users/status?userId=${userId}&status=${status}`);
             setOrders(response.data);

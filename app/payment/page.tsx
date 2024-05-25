@@ -13,7 +13,7 @@ const HistoryPage: React.FC = () => {
 
     const fetchOrders = async () => {
         try {
-            const userId = 123; // Example user ID
+            const userId = "123"; // Example user ID
             const status = "Waiting Payment";
             const response = await axios.get(`${baseURL}/api/v1/order/users/status?userId=${userId}&status=${status}`);
             setOrders(response.data);

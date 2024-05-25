@@ -32,7 +32,7 @@ const ProfileUser = () => {
         if (!value) {
           return;
         }
-        const response = await fetch("http://localhost:8080/api/user/me", {
+        const response = await fetch("http://localhost:8081/api/user/me", {
           headers: {
             Authorization: `Bearer ${value}`,
           },
@@ -82,7 +82,7 @@ const ProfileUser = () => {
 
     try {
       console.log(user);
-      const response = await fetch("http://localhost:8080/api/user/edit", {
+      const response = await fetch("http://localhost:8081/api/user/edit", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
