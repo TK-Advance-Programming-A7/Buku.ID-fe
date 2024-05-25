@@ -1,8 +1,31 @@
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
+import React, { ChangeEvent, FormEvent, useState } from "react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import Toast from "./toast";
 
 const FormRegister = () => {
-  const [formData, setFormData] = useState<any>({
+  const router = useRouter();
+  interface FormData {
+    fullName: string;
+    email: string;
+    password: string;
+    role: "ADMIN" | "USER" | "";
+    gender: "MALE" | "FEMALE" | "OTHER" | "";
+    phone: string;
+    bio: string;
+  }
+
+  interface FormErrors {
+    fullName?: string;
+    email?: string;
+    password?: string;
+    role?: string;
+    gender?: string;
+    phone?: string;
+    bio?: string;
+  }
+  const [formData, setFormData] = useState<FormData>({
     fullName: "",
     email: "",
     password: "",
@@ -12,45 +35,41 @@ const FormRegister = () => {
     bio: "",
   });
 
-  const [errors, setErrors] = useState<any>({});
-  const router = useRouter();
+  const [errors, setErrors] = useState<FormErrors>({});
+  const [toast, setToast] = useState<{
+    message: string;
+    type: "success" | "error";
+  } | null>(null);
 
-  const validateEmail = (email: string) => {
+  const validateEmail = (email: string): boolean => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   };
 
-  const validatePhone = (phone: string) => {
+  const validatePhone = (phone: string): boolean => {
     const phoneRegex = /^[0-9]{10,15}$/;
     return phoneRegex.test(phone);
   };
 
-  const validateRole = (role: string) => {
-    return role === "ADMIN" || role === "USER";
-  };
-
-  const validateGender = (gender: string) => {
-    return gender === "MALE" || gender === "FEMALE" || gender === "OTHER";
-  };
-
-  const validateForm = () => {
-    const newErrors: any = {};
+  const validateForm = (): boolean => {
+    const newErrors: FormErrors = {};
     if (!formData.fullName) newErrors.fullName = "Full Name is required";
     if (!formData.email || !validateEmail(formData.email))
       newErrors.email = "Valid email is required";
     if (!formData.password || formData.password.length < 6)
       newErrors.password = "Password must be at least 6 characters";
-    if (!formData.role || !validateRole(formData.role))
-      newErrors.role = "Role is required";
-    if (!formData.gender || !validateGender(formData.gender))
-      newErrors.gender = "Gender is required";
+    if (!formData.role) newErrors.role = "Role is required";
+    if (!formData.gender) newErrors.gender = "Gender is required";
     if (!formData.phone || !validatePhone(formData.phone))
       newErrors.phone = "Valid phone number is required";
+    if (!formData.bio) newErrors.bio = "Bio is required";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleChange = (e: { target: { name: any; value: any } }) => {
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+  ): void => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
@@ -58,33 +77,46 @@ const FormRegister = () => {
     });
   };
 
-  const handleSubmit = async (e: { preventDefault: () => void }) => {
+  const handleCloseToast = () => {
+    setToast(null);
+  };
+
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (validateForm()) {
       try {
-        const response = await fetch(
-          "http://localhost:8080/api/auth/signup",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(formData),
-          }
-        );
+        const response = await fetch("http://localhost:8080/api/auth/signup", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        });
         if (response.ok) {
           const data = await response.json();
           console.log(data);
           router.push("/login");
+        } else {
+          const errorData = await response.json();
+          console.log(errorData);
+          setToast({
+            message: "Registration failed. Please try again.",
+            type: "error",
+          });
         }
       } catch (error) {
         console.error("An unexpected error happened:", error);
+        setToast({
+          message: "Registration failed. Please try again.",
+          type: "error",
+        });
       }
     }
   };
 
   return (
     <form className="mt-8 space-y-6" onSubmit={handleSubmit} noValidate>
+      <ToastContainer />
       <div className="rounded-md -space-y-px">
         <div>
           <label htmlFor="full-name" className="sr-only">
@@ -168,11 +200,11 @@ const FormRegister = () => {
             <option value="" disabled>
               Role
             </option>
-            <option value="ADMIN" className="text-gray-900">
-              ADMIN
-            </option>
             <option value="USER" className="text-gray-900">
               USER
+            </option>
+            <option value="ADMIN" className="text-gray-900">
+              ADMIN
             </option>
           </select>
           {errors.role && (
@@ -268,6 +300,13 @@ const FormRegister = () => {
           </a>
         </p>
       </div>
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={handleCloseToast}
+        />
+      )}
     </form>
   );
 };
