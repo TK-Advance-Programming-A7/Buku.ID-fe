@@ -3,24 +3,24 @@
 import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash, faCheckCircle } from '@fortawesome/free-solid-svg-icons';
-import { Order, OrderItem } from './types';
+import { Order, OrderItem, Book } from './types';
 import axios from "axios";
 import Navbar from "@/app/components/navbar";
 
+
 const PaymentPage: React.FC = () => {
     const [orders, setOrders] = useState<Order[]>([]);
+    const [books, setBooks] = useState<{ [key: number]: Book }>({});
     const [address, setAddress] = useState('');
     const [showPopupCancel, setShowPopupCancel] = useState(false);
+    const [email, setEmail] = useState("");
 
     const baseURL = 'http://localhost:8080';
-
-    const [email, setEmail] = useState("");
 
     const fetchOrders = async () => {
         let value = null;
         try {
             value = localStorage.getItem("token") || "";
-            console.log(value);
             if (!value) {
                 return;
             }
@@ -36,26 +36,42 @@ const PaymentPage: React.FC = () => {
                 emailUser = userData.email;
             }
 
-            const userId = emailUser; // Example user ID
+            const userId = emailUser;
             const status = "Waiting Payment";
-            const response = await axios.get(`${baseURL}/api/v1/order/users/status?userId=${userId}&status=${status}`);
+            const response = await axios.get(`${baseURL}/api/v1/order/users/status`, {
+                params: { userId, status },
+            });
             setOrders(response.data);
         } catch (error) {
             console.error('Failed to fetch orders:', error);
         }
     };
 
+    const fetchBook = async (id: number): Promise<Book | null> => {
+        try {
+            const response = await axios.get(`http://localhost:8082/api/books/${id}`);
+            return response.data;
+        } catch (error) {
+            console.error(`Failed to fetch book with id ${id}:`, error);
+            return null;
+        }
+    };
 
-    useEffect(() => {
-        fetchOrders();
-    }, []);
+    const fetchBooksForOrders = async (orders: Order[]) => {
+        const bookPromises = orders.flatMap(order =>
+            order.items.map(item => fetchBook(item.idBook))
+        );
 
-    const formatRupiah = (amount: number): string => {
-        const formatter = new Intl.NumberFormat('id-ID', {
-            style: 'currency',
-            currency: 'IDR'
+        const bookResults = await Promise.all(bookPromises);
+
+        const booksMap: { [key: number]: Book } = {};
+        bookResults.forEach(book => {
+            if (book) {
+                booksMap[book.idBook] = book;
+            }
         });
-        return formatter.format(amount);
+
+        setBooks(booksMap);
     };
 
     const handleNextStatus = async (
@@ -83,11 +99,7 @@ const PaymentPage: React.FC = () => {
                 }
             };
 
-            console.log('Sending edit payload:', JSON.stringify(editPayload, null, 2));
-
             const editResponse = await axios.patch(`${baseURL}/api/v1/order/edit`, editPayload);
-            console.log('Edit response:', editResponse.data);
-
             fetchOrders();
         } catch (error) {
             console.error('Failed to pay item:', error);
@@ -104,13 +116,33 @@ const PaymentPage: React.FC = () => {
         }
     };
 
-
     const handleClosePopup = () => {
         setShowPopupCancel(false);
     };
 
     const handleAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setAddress(e.target.value);
+    };
+
+    useEffect(() => {
+        const initialize = async () => {
+            await fetchOrders();
+        };
+        initialize();
+    }, []);
+
+    useEffect(() => {
+        if (orders.length > 0) {
+            fetchBooksForOrders(orders);
+        }
+    }, [orders]);
+
+    const formatRupiah = (amount: number): string => {
+        const formatter = new Intl.NumberFormat('id-ID', {
+            style: 'currency',
+            currency: 'IDR'
+        });
+        return formatter.format(amount);
     };
 
     return (
@@ -166,19 +198,36 @@ const PaymentPage: React.FC = () => {
                                                     <td colSpan={4} className="text-center py-4 text-black">No items in this order.</td>
                                                 </tr>
                                             ) : (
-                                                order.items.sort((a, b) => a.idOrderItem - b.idOrderItem).map(item => (
-                                                    <tr key={item.idOrderItem}>
-                                                        <td className="py-4 text-black">
-                                                            <div className="flex items-center">
-                                                                <img className="h-16 w-16 mr-4" src="https://via.placeholder.com/150" alt="Product image" />
-                                                                <span className="font-semibold">{item.idBook}</span>
-                                                            </div>
-                                                        </td>
-                                                        <td className="py-4 text-black">{formatRupiah(item.price)}</td>
-                                                        <td className="py-4 text-black">{item.amount}</td>
-                                                        <td className="py-4 text-black">{formatRupiah(item.price * item.amount)}</td>
-                                                    </tr>
-                                                ))
+                                                order.items.sort((a, b) => a.idOrderItem - b.idOrderItem).map(item => {
+                                                    const book = books[item.idBook];
+                                                    return (
+                                                        <tr key={item.idOrderItem}>
+                                                            <td className="py-4 text-black">
+                                                                <div className="flex items-center">
+                                                                    {book ? (
+                                                                        <>
+                                                                            <img
+                                                                                className="h-16 w-16 mr-4"
+                                                                                src={book.bookPict}
+                                                                                alt={book.title}
+                                                                            />
+                                                                            <span className="font-semibold">
+                                                                                {book.title}
+                                                                            </span>
+                                                                        </>
+                                                                    ) : (
+                                                                        <span className="font-semibold">
+                                                                            Loading...
+                                                                        </span>
+                                                                    )}
+                                                                </div>
+                                                            </td>
+                                                            <td className="py-4 text-black">{formatRupiah(item.price)}</td>
+                                                            <td className="py-4 text-black">{item.amount}</td>
+                                                            <td className="py-4 text-black">{formatRupiah(item.price * item.amount)}</td>
+                                                        </tr>
+                                                    );
+                                                })
                                             )}
                                             </tbody>
                                         </table>
@@ -234,11 +283,8 @@ const PaymentPage: React.FC = () => {
                     </div>
                 )}
             </div>
-            </>
-
+        </>
     );
 };
 
 export default PaymentPage;
-
-
