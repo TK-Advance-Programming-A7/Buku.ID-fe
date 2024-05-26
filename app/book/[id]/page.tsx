@@ -1,10 +1,11 @@
 "use client";
 
-import {useParams, useRouter} from 'next/navigation';
+import { useParams } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { Book } from '../types';
 import AddToCartButton from '@/app/components/AddToCartButton';
 import { BOOK_BASEURL } from '@/app/const';
+import Image from 'next/image';
 
 const BookDetailPage: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -45,7 +46,7 @@ const BookDetailPage: React.FC = () => {
         <div className="bg-gray-100 min-h-screen py-8 flex items-center justify-center">
             <div className="container mx-auto px-4 bg-white p-6 rounded-lg shadow-md">
                 <div className="flex flex-col lg:flex-row">
-                    <img src={book.bookPict} alt={book.title} className="w-full lg:w-1/3 h-64 object-cover mb-4 lg:mb-0 lg:mr-8 rounded" />
+                    <Image src={book.bookPict} alt={book.title} className="w-full lg:w-1/3 h-64 object-cover mb-4 lg:mb-0 lg:mr-8 rounded" height={600} width={600}/>
                     <div className="lg:w-2/3">
                         <h1 className="text-2xl text-black font-bold mb-4">{book.title}</h1>
                         <p className="text-gray-700 mb-2"><span className="font-semibold">Author:</span> {book.author}</p>
