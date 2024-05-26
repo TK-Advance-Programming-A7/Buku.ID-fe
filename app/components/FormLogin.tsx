@@ -49,7 +49,7 @@ const FormLogin: React.FC = () => {
       if (response.ok) {
         const { token } = await response.json();
         localStorage.setItem("token", token);
-        router.push("/");
+        router.push("/book");
       } else {
         const errorData = await response.json();
         setToast({

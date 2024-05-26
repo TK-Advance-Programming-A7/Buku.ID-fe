@@ -82,9 +82,9 @@ const Navbar = () => {
                   <li className="mr-3">
                     <Link
                         className="inline-block text-white no-underline hover:text-gray-800 hover:text-underline py-2 px-4"
-                        href="#"
+                        href="/book"
                     >
-                      <FontAwesomeIcon icon={faShoppingCart} className="mr-1"/> Link
+                      <FontAwesomeIcon icon={faBook} className="mr-1"/> Book
                     </Link>
                   </li>
                   <li className="mr-3">
