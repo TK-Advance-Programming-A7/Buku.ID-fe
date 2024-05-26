@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import {ORDER_BASEURL} from '../const';
 
 interface AddToCartFormProps {
     bookId: number;
@@ -12,8 +13,6 @@ const AddToCartForm: React.FC<AddToCartFormProps> = ({ bookId, price, stock, onC
     const [quantity, setQuantity] = useState(1);
     const [alertMessage, setAlertMessage] = useState("");
     const [showForm, setShowForm] = useState(true); // State to control the visibility of the form
-
-    const baseURL = 'http://localhost:8080';
 
     const handleIncreaseQuantity = () => {
         if (quantity < stock) { // Check if quantity is less than stock before increasing
@@ -33,13 +32,13 @@ const AddToCartForm: React.FC<AddToCartFormProps> = ({ bookId, price, stock, onC
         try {
             const userId = "vinka.aeris@gmail.com"; // Example user ID
             const status = "Waiting Checkout";
-            const response = await axios.get(`${baseURL}/api/v1/order/users/status?userId=${userId}&status=${status}`);
+            const response = await axios.get(`${ORDER_BASEURL}/api/v1/order/users/status?userId=${userId}&status=${status}`);
             const activeOrders = response.data;
 
             let orderId;
 
             if (activeOrders.length === 0) {
-                const newOrderResponse = await axios.post(`${baseURL}/api/v1/order/add`, {
+                const newOrderResponse = await axios.post(`${ORDER_BASEURL}/api/v1/order/add`, {
                     order: {
                         idUser: userId,
                         cancelable: true,
@@ -52,7 +51,7 @@ const AddToCartForm: React.FC<AddToCartFormProps> = ({ bookId, price, stock, onC
             }
 
             // Add item to the cart
-            await axios.post(`${baseURL}/api/v1/order/book/add`, { idOrder: orderId, idBook: bookId, quantity: quantity, price: price });
+            await axios.post(`${ORDER_BASEURL}/api/v1/order/book/add`, { idOrder: orderId, idBook: bookId, quantity: quantity, price: price });
 
             setQuantity(1);
 

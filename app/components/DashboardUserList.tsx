@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Modal from 'react-modal';
+import {AUTH_BASEURL, BOOK_BASEURL} from "@/app/const";
 
 interface User {
     id: number;
@@ -18,7 +19,7 @@ const AdminDashboard: React.FC = () => {
     const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
     useEffect(() => {
-        fetch('http://localhost:8080/api/user/all')
+        fetch(`${AUTH_BASEURL}/api/user/all`)
             .then(response => {
                 return response.json()
             })
@@ -26,7 +27,7 @@ const AdminDashboard: React.FC = () => {
     }, []);
 
     const viewUser = (email: string) => {
-        fetch(`http://localhost:8080/api/user/get/${email}`)
+        fetch(`${AUTH_BASEURL}/api/user/get/${email}`)
             .then(response => response.json())
             .then(user => {
                 return setSelectedUser(user);

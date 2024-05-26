@@ -2,6 +2,8 @@
 
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { AUTH_BASEURL, BOOK_BASEURL, ORDER_BASEURL } from '../const';
+
 
 interface Book {
   idBook: number,
@@ -24,7 +26,7 @@ const AdminDashboard: React.FC = () => {
 
   useEffect(() => {
     // Fetch books
-    fetch('http://localhost:8080/api/books')
+    fetch(`${BOOK_BASEURL}/api/books`)
       .then(response => {
         return response.json()
       })
@@ -37,7 +39,7 @@ const AdminDashboard: React.FC = () => {
   };
 
   const deleteBook = (id: number) => {
-    fetch(`http://localhost:8080/api/books/${id}`, {
+    fetch(`${BOOK_BASEURL}/api/books/${id}`, {
       method: 'DELETE',
     }).then(response => {
       if (response.status === 200) {
