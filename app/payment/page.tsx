@@ -15,6 +15,8 @@ const PaymentPage: React.FC = () => {
     const [showPopupCancel, setShowPopupCancel] = useState(false);
     const [email, setEmail] = useState("");
 
+    const [successMessage, setSuccessMessage] = useState(false); // State for success message
+
     const baseURL = 'http://localhost:8080';
 
     const fetchOrders = async () => {
@@ -100,6 +102,13 @@ const PaymentPage: React.FC = () => {
             };
 
             const editResponse = await axios.patch(`${baseURL}/api/v1/order/edit`, editPayload);
+
+            // Show success message
+            setSuccessMessage(true);
+            setTimeout(() => {
+                setSuccessMessage(false); // Remove success message after 3 seconds
+            }, 2000);
+
             fetchOrders();
         } catch (error) {
             console.error('Failed to pay item:', error);
@@ -146,9 +155,16 @@ const PaymentPage: React.FC = () => {
     };
 
     return (
-        <>
-            <Navbar />
-            <div className={`bg-gray-100 h-screen py-8 pt-24 ${showPopupCancel ? 'bg-opacity-50' : 'bg-opacity-100'} transition-opacity duration-300`}>
+        <><Navbar/>
+            {successMessage && (
+                <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-50">
+                    <div className="bg-white p-4 rounded-lg shadow-lg">
+                        <p className="text-lg font-semibold text-green-500">Payment Successful!</p>
+                        <p className="text-gray-700">Your order has been successfully paid.</p>
+                    </div>
+                </div>
+            )}
+            <div className="bg-gray-100 h-screen py-8 pt-24">
                 <div className="container mx-auto px-4">
                     <h1 className="text-2xl font-semibold mb-4 text-black">Orders Waiting for Payment Page</h1>
 
@@ -272,7 +288,7 @@ const PaymentPage: React.FC = () => {
                     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
                         <div className="bg-white rounded-lg p-6 text-center">
                             <FontAwesomeIcon icon={faCheckCircle} className="text-green-500 text-3xl mb-4" />
-                            <h2 className="text-xl font-semibold mb-4">Cancel is Successful</h2>
+                            <h2 className="text-xl font-semibold mb-4 text-black">Cancel is Successful</h2>
                             <button
                                 className="bg-green-500 text-white py-2 px-4 rounded-md"
                                 onClick={handleClosePopup}
