@@ -14,7 +14,7 @@ const HistoryPage: React.FC = () => {
 
     const [email, setEmail] = useState("");
 
-    const getUserLogin = async () => {
+    const fetchOrders = async () => {
         let value = null;
         try {
             value = localStorage.getItem("token") || "";
@@ -22,26 +22,20 @@ const HistoryPage: React.FC = () => {
             if (!value) {
                 return;
             }
-            const response = await fetch("http://localhost:8081/api/user/me", {
+            const responseLog = await fetch("http://localhost:8081/api/user/me", {
                 headers: {
                     Authorization: `Bearer ${value}`,
                 },
             });
-            if (response.ok) {
-                const userData = await response.json();
+            let emailUser = null;
+            if (responseLog.ok) {
+                const userData = await responseLog.json();
                 setEmail(userData.email); // Set only the email
+                emailUser = userData.email;
             }
-            return;
-        } catch (error) {
-            console.error(error);
-            return;
-        }
-    };
 
-    const fetchOrders = async () => {
-        try {
-            const userId = email; // Example user ID
-            const status = "Waiting Delivered";
+            const userId = emailUser; // Example user ID
+            const status = "Waiting Checkout";
             const response = await axios.get(`${baseURL}/api/v1/order/users/status?userId=${userId}&status=${status}`);
             setOrders(response.data);
         } catch (error) {
@@ -49,9 +43,7 @@ const HistoryPage: React.FC = () => {
         }
     };
 
-
     useEffect(() => {
-        getUserLogin();
         fetchOrders();
     }, []);
 

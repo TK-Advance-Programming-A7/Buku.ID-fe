@@ -14,7 +14,7 @@ const PaymentPage: React.FC = () => {
 
     const [email, setEmail] = useState("");
 
-    const getUserLogin = async () => {
+    const fetchOrders = async () => {
         let value = null;
         try {
             value = localStorage.getItem("token") || "";
@@ -22,33 +22,22 @@ const PaymentPage: React.FC = () => {
             if (!value) {
                 return;
             }
-            const response = await fetch("http://localhost:8081/api/user/me", {
+            const responseLog = await fetch("http://localhost:8081/api/user/me", {
                 headers: {
                     Authorization: `Bearer ${value}`,
                 },
             });
-            if (response.ok) {
-                const userData = await response.json();
+            let emailUser = null;
+            if (responseLog.ok) {
+                const userData = await responseLog.json();
                 setEmail(userData.email); // Set only the email
+                emailUser = userData.email;
             }
-            return;
-        } catch (error) {
-            console.error(error);
-            return;
-        }
-    };
 
-    const fetchOrders = async () => {
-        try {
-            const userId = email; // Example user ID
-            const status = "Waiting Payment";
+            const userId = emailUser; // Example user ID
+            const status = "Waiting Checkout";
             const response = await axios.get(`${baseURL}/api/v1/order/users/status?userId=${userId}&status=${status}`);
             setOrders(response.data);
-
-            if (response.data.length > 0) {
-                setAddress(response.data[0].address);
-            }
-
         } catch (error) {
             console.error('Failed to fetch orders:', error);
         }
@@ -56,7 +45,6 @@ const PaymentPage: React.FC = () => {
 
 
     useEffect(() => {
-        getUserLogin();
         fetchOrders();
     }, []);
 
