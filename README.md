@@ -34,7 +34,7 @@ This repository contains the frontend code for Buku.ID, an e-commerce platform f
 
 ## Deployment 🚀
 
-Access the deployment here: [Buku.ID-fe Deployment](https://bukuid-fe-production.up.railway.app/)
+Access the deployment here: [Buku.ID-fe Deployment](https://bukuid-adpro-a7.up.railway.app/)
 
 
 --------------------------------------------------------------------------------------------
