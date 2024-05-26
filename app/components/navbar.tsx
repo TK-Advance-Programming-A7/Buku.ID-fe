@@ -4,7 +4,7 @@ import Link from "next/link";
 import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useRouter } from "next/navigation";
-import { faChartLine, faShoppingCart, faCreditCard, faHistory, faSignInAlt, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
+import { faBook, faChartLine, faShoppingCart, faCreditCard, faHistory, faSignInAlt, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 import { AUTH_BASEURL } from "../const";
 
 const Navbar = () => {
