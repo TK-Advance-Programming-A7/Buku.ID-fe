@@ -6,7 +6,6 @@ import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { Order, OrderItem, Book } from './types';
 import Navbar from '@/app/components/navbar'
 import { useRouter } from "next/navigation";
-import CartSummary from '@/app/components/CartSummary';
 import axios from "axios";
 import { AUTH_BASEURL, BOOK_BASEURL, ORDER_BASEURL } from '../const';
 
@@ -39,7 +38,7 @@ const CartPage: React.FC = () => {
                 emailUser = userData.email;
             }
 
-            const userId = emailUser; 
+            const userId = emailUser;
             const status = "Waiting Checkout";
             const response = await axios.get(`${ORDER_BASEURL}/api/v1/order/users/status`, {
                 params: { userId, status },
@@ -52,11 +51,22 @@ const CartPage: React.FC = () => {
 
     const handleCheckout = async (orderId: number) => {
         try {
+            const orderResponse = await axios.get(`${ORDER_BASEURL}/api/v1/order/${orderId}`);
+            const order = orderResponse.data;
+
+            // Iterate through each item in the order and update the stock
+            const updateStockPromises = order.items.map((item: OrderItem) =>
+                axios.put(`${BOOK_BASEURL}/api/books/decreaseStock/${item.idBook}/${item.amount}`)
+            );
+
+            // Wait for all stock updates to complete
+            await Promise.all(updateStockPromises);
+
             await axios.patch(`${ORDER_BASEURL}/api/v1/order/next`, { idOrder: orderId });
 
             router.push('/payment');
         } catch (error) {
-            console.error('Error during checkout:', error);
+            console.error('Failed to cancel order:', error);
         }
     };
 
@@ -96,7 +106,7 @@ const CartPage: React.FC = () => {
         });
 
         setBooks(booksMap);
-        setShowCheckout(false);
+        setShowCheckout(checkoutEnabled);
     };
 
     const handleDeleteItem = async (orderId: number, itemId: number) => {
@@ -116,6 +126,7 @@ const CartPage: React.FC = () => {
             if(book.stock < item+1){
                 setShowIncrease(true);
             }
+            console.log(book.stock, item, bookId)
         } catch (error) {
             console.error('Failed to decrease item:', error);
         }
@@ -125,14 +136,19 @@ const CartPage: React.FC = () => {
         try {
             await axios.post(`${ORDER_BASEURL}/api/v1/order/book/add`, { idOrder: orderId, idBook: bookId, quantity: 1, price: price });
             const book = books[bookId];
-            if(book.stock = item+1){
+            if(book.stock == item+1){
                 setShowIncrease(false);
             }
-            else if (book.stock > item){
+            else if (book.stock < item+1){
                 setShowIncrease(false);
                 setShowCheckout(false);
             }
+            else {
+                setShowIncrease(true);
+                setShowCheckout(true);
+            }
             fetchOrders();
+            console.log(book.stock, item, bookId)
         } catch (error) {
             console.error('Failed to increase item:', error);
         }
