@@ -6,7 +6,6 @@ import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { Order, OrderItem } from './types';
 import { Book } from '@/app/book/types';
 import CartSummary from '@/app/components/CartSummary';
-import AddToCartForm from '@/app/components/AddToCartForm';
 import axios from "axios";
 
 const CartPage: React.FC = () => {
