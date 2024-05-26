@@ -12,9 +12,35 @@ const PaymentPage: React.FC = () => {
 
     const baseURL = 'http://localhost:8080';
 
+    const [email, setEmail] = useState("");
+
+    const getUserLogin = async () => {
+        let value = null;
+        try {
+            value = localStorage.getItem("token") || "";
+            console.log(value);
+            if (!value) {
+                return;
+            }
+            const response = await fetch("http://localhost:8081/api/user/me", {
+                headers: {
+                    Authorization: `Bearer ${value}`,
+                },
+            });
+            if (response.ok) {
+                const userData = await response.json();
+                setEmail(userData.email); // Set only the email
+            }
+            return;
+        } catch (error) {
+            console.error(error);
+            return;
+        }
+    };
+
     const fetchOrders = async () => {
         try {
-            const userId = "123"; // Example user ID
+            const userId = email; // Example user ID
             const status = "Waiting Payment";
             const response = await axios.get(`${baseURL}/api/v1/order/users/status?userId=${userId}&status=${status}`);
             setOrders(response.data);
@@ -30,6 +56,7 @@ const PaymentPage: React.FC = () => {
 
 
     useEffect(() => {
+        getUserLogin();
         fetchOrders();
     }, []);
 
