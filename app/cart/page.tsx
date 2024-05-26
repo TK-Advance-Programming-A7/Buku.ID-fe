@@ -5,11 +5,13 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { Order, OrderItem, Book } from './types';
 import Navbar from '@/app/components/navbar'
+import { useRouter } from "next/navigation";
 import CartSummary from '@/app/components/CartSummary';
 import axios from "axios";
 import { AUTH_BASEURL, BOOK_BASEURL, ORDER_BASEURL } from '../const';
 
 const CartPage: React.FC = () => {
+    const router = useRouter(); // Use the useRouter hook to get access to the router object
     const [orders, setOrders] = useState<Order[]>([]);
     const [books, setBooks] = useState<{ [key: number]: Book }>({});
     const [email, setEmail] = useState("");
@@ -43,6 +45,17 @@ const CartPage: React.FC = () => {
             console.error('Failed to fetch orders:', error);
         }
     };
+
+    const handleCheckout = async (orderId: number) => {
+        try {
+            await axios.patch(`${ORDER_BASEURL}/api/v1/order/next`, { idOrder: orderId });
+
+            router.push('/payment');
+        } catch (error) {
+            console.error('Error during checkout:', error);
+        }
+    };
+
 
     const fetchBook = async (id: number): Promise<Book | null> => {
         try {
@@ -119,6 +132,10 @@ const CartPage: React.FC = () => {
         return formatter.format(amount);
     };
 
+    const calculateTotal = (): number => {
+        return orders.reduce((total, order) => total + order.totalPrice, 0);
+    };
+
     return (
         <><Navbar />
             <div className="bg-gray-100 h-screen py-8 pt-24">
@@ -174,13 +191,15 @@ const CartPage: React.FC = () => {
                                                             <td className="py-4 text-black">{formatRupiah(item.price)}</td>
                                                             <td className="py-4">
                                                                 <div className="flex items-center">
-                                                                    <button className="border rounded-md py-2 px-4 mr-2 text-black"
-                                                                            onClick={() => handleDecreaseItem(order.idOrder, item.idBook)}>-
+                                                                    <button
+                                                                        className="border rounded-md py-2 px-4 mr-2 text-black"
+                                                                        onClick={() => handleDecreaseItem(order.idOrder, item.idBook)}>-
                                                                     </button>
                                                                     <span
                                                                         className="text-center w-8 text-black">{item.amount}</span>
-                                                                    <button className="border rounded-md py-2 px-4 ml-2 text-black"
-                                                                            onClick={() => handleIncreaseItem(order.idOrder, item.idBook, item.price)}>+
+                                                                    <button
+                                                                        className="border rounded-md py-2 px-4 ml-2 text-black"
+                                                                        onClick={() => handleIncreaseItem(order.idOrder, item.idBook, item.price)}>+
                                                                     </button>
                                                                 </div>
                                                             </td>
@@ -188,7 +207,7 @@ const CartPage: React.FC = () => {
                                                             <td className="py-4 text-black">
                                                                 <button type="button" className="ml-2 text-sm px-2 py-1"
                                                                         onClick={() => handleDeleteItem(order.idOrder, item.idOrderItem)}>
-                                                                    <FontAwesomeIcon icon={faTrash} /> Delete
+                                                                    <FontAwesomeIcon icon={faTrash}/> Delete
                                                                 </button>
                                                             </td>
                                                         </tr>
@@ -201,10 +220,21 @@ const CartPage: React.FC = () => {
                             </div>
                         </div>
                         <div className="md:w-1/4 text-black">
-                            {orders.map(order => (
-                                <CartSummary key={order.idOrder} total={formatRupiah(order.totalPrice)}
-                                             idOrder={order.idOrder} orders={orders} books={books}/>
-                            ))}
+                            <div className="bg-white rounded-lg shadow-md p-6">
+                                <h2 className="text-lg font-semibold mb-4">Summary</h2>
+                                <div className="flex justify-between mb-2">
+                                    <span>Subtotal</span>
+                                    <span>{formatRupiah(calculateTotal())}</span>
+                                </div>
+                                <hr className="my-2"/>
+                                <div className="flex justify-between mb-2">
+                                    <span className="font-semibold">Total</span>
+                                    <span className="font-semibold">{formatRupiah(calculateTotal())}</span>
+                                </div>
+                                <button className="bg-blue-500 text-white py-2 px-4 rounded-lg mt-4 w-full"
+                                        onClick={() => handleCheckout(orders[0].idOrder)}>Checkout
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>

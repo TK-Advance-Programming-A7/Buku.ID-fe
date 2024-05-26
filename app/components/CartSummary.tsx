@@ -1,10 +1,11 @@
+"use client"; // Make sure this is at the very top of the file
+
 import React from 'react';
 import axios from 'axios';
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { AUTH_BASEURL, BOOK_BASEURL, ORDER_BASEURL } from '../const';
 
-
-export interface OrderItem {
+interface OrderItem {
     idOrderItem: number;
     idBook: number;
     amount: number;
@@ -12,7 +13,7 @@ export interface OrderItem {
     totalPrice: number;
 }
 
-export interface Order {
+interface Order {
     idOrder: number;
     idUser: string;
     orderDate: string;
@@ -23,7 +24,7 @@ export interface Order {
     status: string;
 }
 
-export interface Book {
+interface Book {
     idBook: number;
     title: string;
     author: string;
@@ -44,10 +45,9 @@ interface Props {
     orders: Order[];
     books: { [key: number]: Book }; // Menggunakan objek untuk mewakili koleksi buku
 }
-
 const CartSummary: React.FC<Props> = ({ total, idOrder, orders, books }) => {
     const router = useRouter();
-    const baseURL = 'http://localhost:8080';
+    const baseURL = `${ORDER_BASEURL}`;
 
     const handleCheckout = async () => {
         try {
@@ -61,15 +61,15 @@ const CartSummary: React.FC<Props> = ({ total, idOrder, orders, books }) => {
                     }
                 });
             });
-    
+
             if (insufficientStock) {
                 console.error('Insufficient stock for one or more items.');
                 // Tampilkan pesan kesalahan atau lakukan tindakan yang sesuai
                 return;
             }
-    
+
             // Lakukan checkout jika stok cukup
-            await axios.patch(`${baseURL}/api/v1/order/next`, { idOrder: idOrder });
+            await axios.patch(`${ORDER_BASEURL}/api/v1/order/next`, { idOrder: idOrder });
 
             // Kurangi stok buku
             await Promise.all(orders.map(async order => {
