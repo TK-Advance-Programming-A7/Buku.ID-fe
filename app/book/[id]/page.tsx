@@ -47,7 +47,7 @@ const BookDetailPage: React.FC = () => {
                 <div className="flex flex-col lg:flex-row">
                     <img src={book.bookPict} alt={book.title} className="w-full lg:w-1/3 h-64 object-cover mb-4 lg:mb-0 lg:mr-8 rounded" />
                     <div className="lg:w-2/3">
-                        <h1 className="text-2xl font-bold mb-4">{book.title}</h1>
+                        <h1 className="text-2xl text-black font-bold mb-4">{book.title}</h1>
                         <p className="text-gray-700 mb-2"><span className="font-semibold">Author:</span> {book.author}</p>
                         <p className="text-gray-700 mb-2"><span className="font-semibold">Publisher:</span> {book.publisher}</p>
                         <p className="text-gray-700 mb-2"><span className="font-semibold">ISBN:</span> {book.isbn}</p>

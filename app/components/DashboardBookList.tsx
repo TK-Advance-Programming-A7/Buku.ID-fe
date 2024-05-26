@@ -1,9 +1,7 @@
 "use client"
 
 import React, { useEffect, useState } from 'react';
-import DashboardNavbar from '@/app/components/DashboardNavbar'
 import { useRouter } from 'next/navigation';
-import Navbar from '@/app/components/navbar';
 
 interface Book {
   idBook: number,
@@ -26,7 +24,7 @@ const AdminDashboard: React.FC = () => {
 
   useEffect(() => {
     // Fetch books
-    fetch('http://localhost:8081/api/books')
+    fetch('http://localhost:8080/api/books')
       .then(response => {
         return response.json()
       })
@@ -39,10 +37,10 @@ const AdminDashboard: React.FC = () => {
   };
 
   const deleteBook = (id: number) => {
-    fetch(`http://localhost:8081/api/books/${id}`, {
+    fetch(`http://localhost:8080/api/books/${id}`, {
       method: 'DELETE',
     }).then(response => {
-      if (response.status === 204) {
+      if (response.status === 200) {
         alert('Book Deleted Successfully');
         location.reload();
       } else {
@@ -52,6 +50,10 @@ const AdminDashboard: React.FC = () => {
       console.error('Error during fetch operation:', error);
     });
   };
+
+  const addBook = () => {
+    router.push('/book/new');
+  }
 
   return (
     <>
