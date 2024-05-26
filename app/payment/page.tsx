@@ -1,8 +1,6 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { Order, OrderItem } from './types';
 import axios from "axios";
 import Navbar from "@/app/components/navbar";
@@ -10,6 +8,8 @@ import Navbar from "@/app/components/navbar";
 const PaymentPage: React.FC = () => {
     const [orders, setOrders] = useState<Order[]>([]);
     const [address, setAddress] = useState('');
+
+    const [successMessage, setSuccessMessage] = useState(false); // State for success message
 
     const baseURL = 'http://localhost:8080';
 
@@ -87,6 +87,12 @@ const PaymentPage: React.FC = () => {
             const editResponse = await axios.patch(`${baseURL}/api/v1/order/edit`, editPayload);
             console.log('Edit response:', editResponse.data);
 
+            // Show success message
+            setSuccessMessage(true);
+            setTimeout(() => {
+                setSuccessMessage(false); // Remove success message after 3 seconds
+            }, 2000);
+
             fetchOrders();
         } catch (error) {
             console.error('Failed to pay item:', error);
@@ -109,6 +115,14 @@ const PaymentPage: React.FC = () => {
 
     return (
         <><Navbar/>
+            {successMessage && (
+                <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-50">
+                    <div className="bg-white p-4 rounded-lg shadow-lg">
+                        <p className="text-lg font-semibold text-green-500">Payment Successful!</p>
+                        <p className="text-gray-700">Your order has been successfully paid.</p>
+                    </div>
+                </div>
+            )}
             <div className="bg-gray-100 h-screen py-8 pt-24">
                 <div className="container mx-auto px-4">
                     <h1 className="text-2xl font-semibold mb-4 text-black">Orders Waiting for Payment Page</h1>

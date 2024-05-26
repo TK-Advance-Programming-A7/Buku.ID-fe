@@ -66,7 +66,7 @@ const HistoryPage: React.FC = () => {
                         <div className="md:w-full">
                             {orders.length === 0 ? (
                                 <div className="bg-white rounded-lg shadow-md p-6 mb-4 text-center text-black">
-                                    Your cart is empty.
+                                    Your history is empty.
                                 </div>
                             ) : (
                                 orders.map(order => (
