@@ -4,7 +4,6 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AUTH_BASEURL, BOOK_BASEURL, ORDER_BASEURL } from '../const';
 
-
 interface Book {
   idBook: number,
   title: string,
@@ -31,7 +30,6 @@ const AdminDashboard: React.FC = () => {
         return response.json()
       })
       .then(data => setBooks(data));
-
   }, []);
 
   const editBook = (id: number) => {
@@ -88,6 +86,11 @@ const AdminDashboard: React.FC = () => {
           ))}
         </tbody>
       </table>
+      <div className="flex justify-end mt-4">
+        <button className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded" onClick={addBook}>
+          Add Book
+        </button>
+      </div>
     </>
   );
 };
