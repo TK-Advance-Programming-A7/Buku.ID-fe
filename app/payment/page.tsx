@@ -6,6 +6,7 @@ import { faTrash, faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 import { Order, OrderItem, Book } from './types';
 import axios from "axios";
 import Navbar from "@/app/components/navbar";
+import { AUTH_BASEURL, BOOK_BASEURL, ORDER_BASEURL } from '../const';
 
 
 const PaymentPage: React.FC = () => {
@@ -17,8 +18,6 @@ const PaymentPage: React.FC = () => {
 
     const [successMessage, setSuccessMessage] = useState(false); // State for success message
 
-    const baseURL = 'http://localhost:8080';
-
     const fetchOrders = async () => {
         let value = null;
         try {
@@ -26,7 +25,7 @@ const PaymentPage: React.FC = () => {
             if (!value) {
                 return;
             }
-            const responseLog = await fetch("http://localhost:8081/api/user/me", {
+            const responseLog = await fetch(`${AUTH_BASEURL}/api/user/me`, {
                 headers: {
                     Authorization: `Bearer ${value}`,
                 },
@@ -40,7 +39,7 @@ const PaymentPage: React.FC = () => {
 
             const userId = emailUser;
             const status = "Waiting Payment";
-            const response = await axios.get(`${baseURL}/api/v1/order/users/status`, {
+            const response = await axios.get(`${ORDER_BASEURL}/api/v1/order/users/status`, {
                 params: { userId, status },
             });
             setOrders(response.data);
@@ -51,7 +50,7 @@ const PaymentPage: React.FC = () => {
 
     const fetchBook = async (id: number): Promise<Book | null> => {
         try {
-            const response = await axios.get(`http://localhost:8082/api/books/${id}`);
+            const response = await axios.get(`${BOOK_BASEURL}/api/books/${id}`);
             return response.data;
         } catch (error) {
             console.error(`Failed to fetch book with id ${id}:`, error);
@@ -101,7 +100,7 @@ const PaymentPage: React.FC = () => {
                 }
             };
 
-            const editResponse = await axios.patch(`${baseURL}/api/v1/order/edit`, editPayload);
+            const editResponse = await axios.patch(`${ORDER_BASEURL}/api/v1/order/edit`, editPayload);
 
             // Show success message
             setSuccessMessage(true);
@@ -117,7 +116,7 @@ const PaymentPage: React.FC = () => {
 
     const handleCancelOrder = async (orderId: number) => {
         try {
-            await axios.patch(`${baseURL}/api/v1/order/cancel`, { idOrder: orderId });
+            await axios.patch(`${ORDER_BASEURL}/api/v1/order/cancel`, { idOrder: orderId });
             fetchOrders();
             setShowPopupCancel(true);
         } catch (error) {

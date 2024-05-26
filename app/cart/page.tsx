@@ -7,13 +7,12 @@ import { Order, OrderItem, Book } from './types';
 import Navbar from '@/app/components/navbar'
 import CartSummary from '@/app/components/CartSummary';
 import axios from "axios";
+import { AUTH_BASEURL, BOOK_BASEURL, ORDER_BASEURL } from '../const';
 
 const CartPage: React.FC = () => {
     const [orders, setOrders] = useState<Order[]>([]);
     const [books, setBooks] = useState<{ [key: number]: Book }>({});
     const [email, setEmail] = useState("");
-
-    const baseURL = 'http://localhost:8080';
 
     const fetchOrders = async () => {
         let value = null;
@@ -22,7 +21,7 @@ const CartPage: React.FC = () => {
             if (!value) {
                 return;
             }
-            const responseLog = await fetch("http://localhost:8081/api/user/me", {
+            const responseLog = await fetch(`${AUTH_BASEURL}/api/user/me`, {
                 headers: {
                     Authorization: `Bearer ${value}`,
                 },
@@ -36,7 +35,7 @@ const CartPage: React.FC = () => {
 
             const userId = emailUser; // Example user ID
             const status = "Waiting Checkout";
-            const response = await axios.get(`${baseURL}/api/v1/order/users/status`, {
+            const response = await axios.get(`${ORDER_BASEURL}/api/v1/order/users/status`, {
                 params: { userId, status },
             });
             setOrders(response.data);
@@ -47,7 +46,7 @@ const CartPage: React.FC = () => {
 
     const fetchBook = async (id: number): Promise<Book | null> => {
         try {
-            const response = await axios.get(`http://localhost:8082/api/books/${id}`);
+            const response = await axios.get(`${BOOK_BASEURL}/api/books/${id}`);
             return response.data;
         } catch (error) {
             console.error(`Failed to fetch book with id ${id}:`, error);
@@ -74,7 +73,7 @@ const CartPage: React.FC = () => {
 
     const handleDeleteItem = async (orderId: number, itemId: number) => {
         try {
-            await axios.delete(`${baseURL}/api/v1/order/book/delete`, { data: { idOrder: orderId, idOrderItem: itemId } });
+            await axios.delete(`${ORDER_BASEURL}/api/v1/order/book/delete`, { data: { idOrder: orderId, idOrderItem: itemId } });
             fetchOrders();
         } catch (error) {
             console.error('Failed to delete item:', error);
@@ -83,7 +82,7 @@ const CartPage: React.FC = () => {
 
     const handleDecreaseItem = async (orderId: number, bookId: number) => {
         try {
-            await axios.patch(`${baseURL}/api/v1/order/book/decrease`, { idOrder: orderId, idBook: bookId, quantity: 1 });
+            await axios.patch(`${ORDER_BASEURL}/api/v1/order/book/decrease`, { idOrder: orderId, idBook: bookId, quantity: 1 });
             fetchOrders();
         } catch (error) {
             console.error('Failed to decrease item:', error);
@@ -92,7 +91,7 @@ const CartPage: React.FC = () => {
 
     const handleIncreaseItem = async (orderId: number, bookId: number, price: number) => {
         try {
-            await axios.post(`${baseURL}/api/v1/order/book/add`, { idOrder: orderId, idBook: bookId, quantity: 1, price: price });
+            await axios.post(`${ORDER_BASEURL}/api/v1/order/book/add`, { idOrder: orderId, idBook: bookId, quantity: 1, price: price });
             fetchOrders();
         } catch (error) {
             console.error('Failed to increase item:', error);

@@ -4,6 +4,7 @@ import {useParams, useRouter} from 'next/navigation';
 import { useEffect, useState } from "react";
 import { Book } from '@/app/book/types';
 import BookForm from "@/app/components/BookForm";
+import { BOOK_BASEURL } from '@/app/const';
 
 const EditBookPage: React.FC = () => {
     const router = useRouter();
@@ -11,12 +12,10 @@ const EditBookPage: React.FC = () => {
     const [book, setBook] = useState<Book>();
     const [loading, setLoading] = useState(true);
 
-    const baseURL = 'http://localhost:8080';
-
     useEffect(() => {
         const fetchBook = async () => {
             try {
-                const response = await fetch(`${baseURL}/api/books/${id}`);
+                const response = await fetch(`${BOOK_BASEURL}/api/books/${id}`);
                 if (!response.ok) {
                     throw new Error("Network response was not ok");
                 }
@@ -34,7 +33,7 @@ const EditBookPage: React.FC = () => {
 
     const handleUpdateBook = async (formData: Book) => {
         try {
-            const response = await fetch(`${baseURL}/api/books/${id}`, {
+            const response = await fetch(`${BOOK_BASEURL}/api/books/${id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json'

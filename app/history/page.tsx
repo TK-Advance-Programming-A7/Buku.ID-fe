@@ -4,13 +4,13 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Navbar from '@/app/components/navbar';
 import { Order, OrderItem, Book } from './types';
+import { AUTH_BASEURL, BOOK_BASEURL, ORDER_BASEURL } from '../const';
+
 
 const HistoryPage: React.FC = () => {
     const [orders, setOrders] = useState<Order[]>([]);
     const [books, setBooks] = useState<{ [key: number]: Book }>({});
     const [email, setEmail] = useState('');
-
-    const baseURL = 'http://localhost:8080';
 
     const fetchOrders = async () => {
         let value = null;
@@ -19,7 +19,7 @@ const HistoryPage: React.FC = () => {
             if (!value) {
                 return;
             }
-            const responseLog = await fetch('http://localhost:8081/api/user/me', {
+            const responseLog = await fetch(`${AUTH_BASEURL}/api/user/me`, {
                 headers: {
                     Authorization: `Bearer ${value}`,
                 },
@@ -33,7 +33,7 @@ const HistoryPage: React.FC = () => {
 
             const userId = emailUser;
             const status = 'Waiting Delivered';
-            const response = await axios.get(`${baseURL}/api/v1/order/users/status`, {
+            const response = await axios.get(`${ORDER_BASEURL}/api/v1/order/users/status`, {
                 params: { userId, status },
             });
             setOrders(response.data);
@@ -44,7 +44,7 @@ const HistoryPage: React.FC = () => {
 
     const fetchBook = async (id: number): Promise<Book | null> => {
         try {
-            const response = await axios.get(`http://localhost:8082/api/books/${id}`);
+            const response = await axios.get(`${BOOK_BASEURL}/api/books/${id}`);
             return response.data;
         } catch (error) {
             console.error(`Failed to fetch book with id ${id}:`, error);

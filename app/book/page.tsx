@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import { useRouter } from 'next/navigation';
 import { Book } from './types';
+import { BOOK_BASEURL } from "../const";
+import Navbar from "../components/navbar";
 
 const BookPage: React.FC = () => {
     const [books, setBooks] = useState<Book[]>([]);
@@ -11,12 +13,9 @@ const BookPage: React.FC = () => {
     const booksPerPage = 20;
     const router = useRouter();
 
-    const baseURL = 'http://localhost:8082';
-
-
     const fetchBooks = async () => {
         try {
-            const response = await fetch(`${baseURL}/api/books`);
+            const response = await fetch(`${BOOK_BASEURL}/api/books`);
             if (!response.ok) {
                 throw new Error("Network response was not ok");
             }
@@ -59,6 +58,7 @@ const BookPage: React.FC = () => {
     };
 
     return (
+        <>
         <div className="bg-gray-100 min-h-screen flex flex-col items-center py-8">
             <div className="w-full fixed top-0 bg-white shadow-md py-4 z-50">
                 <div className="container mx-auto px-4 flex justify-between items-center">
@@ -116,6 +116,7 @@ const BookPage: React.FC = () => {
                 )}
             </div>
         </div>
+        </>
     );
 }
 
