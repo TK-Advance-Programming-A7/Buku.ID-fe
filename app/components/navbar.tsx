@@ -4,10 +4,12 @@ import Link from "next/link";
 import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useRouter } from "next/navigation";
-import { faShoppingCart, faCreditCard, faHistory, faSignInAlt, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
+import { faChartLine, faShoppingCart, faCreditCard, faHistory, faSignInAlt, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
+import { AUTH_BASEURL } from "../const";
 
 const Navbar = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const router = useRouter();
 
 
@@ -15,6 +17,18 @@ const Navbar = () => {
     // Simulate an API call to check if the user is logged in
     const token = localStorage.getItem("token");
     setIsLoggedIn(!!token);
+
+    if(token != null){
+      fetch(`${AUTH_BASEURL}/api/user/me`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        }
+      }).then(response => {
+        console.log(response.json());
+      });
+    }
 
   }, []);
 
@@ -57,6 +71,14 @@ const Navbar = () => {
           >
             {isLoggedIn ? (
                 <ul className="list-reset lg:flex justify-end flex-1 items-center">
+                  <li className="mr-3">
+                    <Link
+                      className="inline-block text-white no-underline hover:text-gray-800 hover:text-underline py-2 px-4"
+                      href="/dashboard"
+                    >
+                      <FontAwesomeIcon icon={faChartLine} className="mr-1" /> Dashboard
+                    </Link>
+                  </li>
                   <li className="mr-3">
                     <Link
                         className="inline-block text-white no-underline hover:text-gray-800 hover:text-underline py-2 px-4"

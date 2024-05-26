@@ -2,17 +2,26 @@
 
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import DashboardNavbar from '@/app/components/DashboardNavbar'
+import DashboardBookList from '@/app/components/DashboardBookList';
+import DashboardUserList from '@/app/components/DashboardUserList';
 
 const AdminDashboard: React.FC = () => {
   const router = useRouter();
+  const [showBookPage, setShowBookPage] = useState(true);
 
-  React.useEffect(() => {
-    router.push('/dashboard/books');
-  });
+  const togglePage = () => {
+    setShowBookPage(!showBookPage);
+  };
 
-
-  return <></>
+  return (
+    <>
+      {/* <h3 className='text-white'> WOAIWOAIWO </h3> */}
+      <button onClick={togglePage}>
+        {showBookPage ? 'View Users' : 'View Books'}
+      </button>
+      {showBookPage ? <DashboardBookList /> : <DashboardUserList />}
+    </>
+  );
 };
 
 export default AdminDashboard;

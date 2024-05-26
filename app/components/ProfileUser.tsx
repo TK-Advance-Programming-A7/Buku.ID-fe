@@ -4,6 +4,7 @@ import { ChangeEvent, useEffect, useState } from "react";
 import { User } from "../libs/user";
 import { useRouter } from "next/navigation";
 import Toast from "./toast";
+import { AUTH_BASEURL } from "../const";
 
 const ProfileUser = () => {
   const router = useRouter();
@@ -32,7 +33,7 @@ const ProfileUser = () => {
         if (!value) {
           return;
         }
-        const response = await fetch("http://localhost:8081/api/user/me", {
+        const response = await fetch(`${AUTH_BASEURL}/api/user/me`, {
           headers: {
             Authorization: `Bearer ${value}`,
           },
@@ -82,7 +83,7 @@ const ProfileUser = () => {
 
     try {
       console.log(user);
-      const response = await fetch("http://localhost:8080/api/user/edit", {
+      const response = await fetch(`${AUTH_BASEURL}/api/user/edit`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

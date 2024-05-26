@@ -4,20 +4,19 @@ import {useParams, useRouter} from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { Book } from '../types';
 import AddToCartButton from '@/app/components/AddToCartButton';
+import { BOOK_BASEURL } from '@/app/const';
 
 const BookDetailPage: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const [book, setBook] = useState<Book>();
     const [loading, setLoading] = useState(true);
 
-    const baseURL = 'http://localhost:8080';
-
     useEffect(() => {
         const fetchBook = async () => {
             setLoading(true);
             if (id) {
                 try {
-                    const response = await fetch(`${baseURL}/api/books/${id}`);
+                    const response = await fetch(`${BOOK_BASEURL}/api/books/${id}`);
                     if (!response.ok) {
                         throw new Error("Network response was not ok");
                     }

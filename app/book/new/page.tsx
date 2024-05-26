@@ -4,14 +4,14 @@ import { useRouter } from 'next/navigation';
 import { useState } from "react";
 import { Book } from '../types';
 import BookForm from "@/app/components/BookForm";
+import { BOOK_BASEURL } from '@/app/const';
 
 const AddBookPage: React.FC = () => {
     const router = useRouter();
-    const baseURL = 'http://localhost:8080';
 
     const handleSubmit = async (formData: Book) => {
         try {
-            const response = await fetch(`${baseURL}/api/books`, {
+            const response = await fetch(`${BOOK_BASEURL}/api/books`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
