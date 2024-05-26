@@ -1,8 +1,17 @@
+"use client"
+
 import Navbar from "./components/navbar";
 import Footer from "./components/footer";
 import Image from "next/image";
+import { useRouter } from "next/navigation"
 
 export default function Home() {
+  const router = useRouter()
+
+  const onLoginButtonClick = () => {
+    router.push('/login');
+  }
+
   return (
     <>
       <Navbar />
@@ -18,7 +27,7 @@ export default function Home() {
             <p className="leading-normal text-2xl mb-8">
               Find your next adventure with our vast collection of books.
             </p>
-            <button className="mx-auto lg:mx-0 hover:underline bg-white text-gray-800 font-bold rounded-full my-6 py-4 px-8 shadow-lg focus:outline-none focus:shadow-outline transform transition hover:scale-105 duration-300 ease-in-out">
+            <button onClick={onLoginButtonClick} className="mx-auto lg:mx-0 hover:underline bg-white text-gray-800 font-bold rounded-full my-6 py-4 px-8 shadow-lg focus:outline-none focus:shadow-outline transform transition hover:scale-105 duration-300 ease-in-out">
               Login
             </button>
           </div>

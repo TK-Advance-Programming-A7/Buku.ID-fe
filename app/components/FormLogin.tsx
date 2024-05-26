@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import React, { useState, FormEvent, ChangeEvent } from "react";
 import Toast from "./toast";
 import Link from "next/link";
+import { AUTH_BASEURL } from "../const";
 
 const FormLogin: React.FC = () => {
   const [email, setEmail] = useState<string>("");
@@ -37,7 +38,7 @@ const FormLogin: React.FC = () => {
     }
 
     try {
-      const response = await fetch("http://localhost:8081/api/auth/login", {
+      const response = await fetch(`${AUTH_BASEURL}/api/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -48,7 +49,7 @@ const FormLogin: React.FC = () => {
       if (response.ok) {
         const { token } = await response.json();
         localStorage.setItem("token", token);
-        router.push("/");
+        router.push("/book");
       } else {
         const errorData = await response.json();
         setToast({

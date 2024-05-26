@@ -6,8 +6,10 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Toast from "./toast";
 import Link from "next/link";
+import { AUTH_BASEURL } from "@/app/const";
 
 const FormRegister = () => {
+
   const router = useRouter();
   interface FormData {
     fullName: string;
@@ -88,7 +90,7 @@ const FormRegister = () => {
     e.preventDefault();
     if (validateForm()) {
       try {
-        const response = await fetch("http://localhost:8081/api/auth/signup", {
+        const response = await fetch(`${AUTH_BASEURL}/api/auth/signup`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

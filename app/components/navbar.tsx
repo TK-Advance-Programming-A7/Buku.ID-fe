@@ -4,18 +4,29 @@ import Link from "next/link";
 import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useRouter } from "next/navigation";
-import { faShoppingCart, faCreditCard, faHistory, faSignInAlt, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
+import { faBook, faChartLine, faShoppingCart, faCreditCard, faHistory, faSignInAlt, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
+import { AUTH_BASEURL } from "../const";
 
 const Navbar = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const router = useRouter();
-
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     // Simulate an API call to check if the user is logged in
     const token = localStorage.getItem("token");
     setIsLoggedIn(!!token);
 
+    fetch(`${AUTH_BASEURL}/api/user/me`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }).then(response => response.json())
+      .then(data => {
+        if (data.role === 'ADMIN') {
+          setIsAdmin(true);
+        }
+      });
   }, []);
 
   const handleLogout = () => {
@@ -57,12 +68,22 @@ const Navbar = () => {
           >
             {isLoggedIn ? (
                 <ul className="list-reset lg:flex justify-end flex-1 items-center">
+                  {isAdmin? 
+                  <li className="mr-3">
+                    <Link
+                      className="inline-block text-white no-underline hover:text-gray-800 hover:text-underline py-2 px-4"
+                      href="/dashboard"
+                    >
+                      <FontAwesomeIcon icon={faChartLine} className="mr-1" /> Dashboard
+                    </Link>
+                  </li> : <></>
+                  }
                   <li className="mr-3">
                     <Link
                         className="inline-block text-white no-underline hover:text-gray-800 hover:text-underline py-2 px-4"
-                        href="#"
+                        href="/book"
                     >
-                      <FontAwesomeIcon icon={faShoppingCart} className="mr-1"/> Link
+                      <FontAwesomeIcon icon={faBook} className="mr-1"/> Book
                     </Link>
                   </li>
                   <li className="mr-3">
