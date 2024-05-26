@@ -150,7 +150,6 @@ const HistoryPage: React.FC = () => {
                                                                                 <img
                                                                                     className="h-16 w-16 mr-4"
                                                                                     src={book.bookPict}
-                                                                                    alt={book.title}
                                                                                 />
                                                                                 <span className="font-semibold">
                                                                                         {book.title}

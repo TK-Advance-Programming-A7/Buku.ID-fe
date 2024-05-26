@@ -186,7 +186,7 @@ const PaymentPage: React.FC = () => {
                         <div className="md:w-full">
                             {orders.length === 0 ? (
                                 <div className="bg-white rounded-lg shadow-md p-6 mb-4 text-center text-black">
-                                    Your cart is empty.
+                                    You have no pending orders at the moment.
                                 </div>
                             ) : (
                                 orders.map(order => (
@@ -225,7 +225,6 @@ const PaymentPage: React.FC = () => {
                                                                             <img
                                                                                 className="h-16 w-16 mr-4"
                                                                                 src={book.bookPict}
-                                                                                alt={book.title}
                                                                             />
                                                                             <span className="font-semibold">
                                                                                 {book.title}
