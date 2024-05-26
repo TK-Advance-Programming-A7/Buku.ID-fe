@@ -3,30 +3,29 @@
 import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash, faCheckCircle } from '@fortawesome/free-solid-svg-icons';
-import { Order, OrderItem } from './types';
+import { Order, OrderItem, Book } from './types';
 import axios from "axios";
 import Navbar from "@/app/components/navbar";
+import { AUTH_BASEURL, BOOK_BASEURL, ORDER_BASEURL } from '../const';
+
 
 const PaymentPage: React.FC = () => {
     const [orders, setOrders] = useState<Order[]>([]);
+    const [books, setBooks] = useState<{ [key: number]: Book }>({});
     const [address, setAddress] = useState('');
     const [showPopupCancel, setShowPopupCancel] = useState(false);
+    const [email, setEmail] = useState("");
 
     const [successMessage, setSuccessMessage] = useState(false); // State for success message
-
-    const baseURL = 'http://localhost:8080';
-
-    const [email, setEmail] = useState("");
 
     const fetchOrders = async () => {
         let value = null;
         try {
             value = localStorage.getItem("token") || "";
-            console.log(value);
             if (!value) {
                 return;
             }
-            const responseLog = await fetch("http://localhost:8081/api/user/me", {
+            const responseLog = await fetch(`${AUTH_BASEURL}/api/user/me`, {
                 headers: {
                     Authorization: `Bearer ${value}`,
                 },
@@ -38,26 +37,42 @@ const PaymentPage: React.FC = () => {
                 emailUser = userData.email;
             }
 
-            const userId = emailUser; // Example user ID
+            const userId = emailUser;
             const status = "Waiting Payment";
-            const response = await axios.get(`${baseURL}/api/v1/order/users/status?userId=${userId}&status=${status}`);
+            const response = await axios.get(`${ORDER_BASEURL}/api/v1/order/users/status`, {
+                params: { userId, status },
+            });
             setOrders(response.data);
         } catch (error) {
             console.error('Failed to fetch orders:', error);
         }
     };
 
+    const fetchBook = async (id: number): Promise<Book | null> => {
+        try {
+            const response = await axios.get(`${BOOK_BASEURL}/api/books/${id}`);
+            return response.data;
+        } catch (error) {
+            console.error(`Failed to fetch book with id ${id}:`, error);
+            return null;
+        }
+    };
 
-    useEffect(() => {
-        fetchOrders();
-    }, []);
+    const fetchBooksForOrders = async (orders: Order[]) => {
+        const bookPromises = orders.flatMap(order =>
+            order.items.map(item => fetchBook(item.idBook))
+        );
 
-    const formatRupiah = (amount: number): string => {
-        const formatter = new Intl.NumberFormat('id-ID', {
-            style: 'currency',
-            currency: 'IDR'
+        const bookResults = await Promise.all(bookPromises);
+
+        const booksMap: { [key: number]: Book } = {};
+        bookResults.forEach(book => {
+            if (book) {
+                booksMap[book.idBook] = book;
+            }
         });
-        return formatter.format(amount);
+
+        setBooks(booksMap);
     };
 
     const handleNextStatus = async (
@@ -85,10 +100,7 @@ const PaymentPage: React.FC = () => {
                 }
             };
 
-            console.log('Sending edit payload:', JSON.stringify(editPayload, null, 2));
-
-            const editResponse = await axios.patch(`${baseURL}/api/v1/order/edit`, editPayload);
-            console.log('Edit response:', editResponse.data);
+            const editResponse = await axios.patch(`${ORDER_BASEURL}/api/v1/order/edit`, editPayload);
 
             // Show success message
             setSuccessMessage(true);
@@ -104,11 +116,28 @@ const PaymentPage: React.FC = () => {
 
     const handleCancelOrder = async (orderId: number) => {
         try {
-            await axios.patch(`${baseURL}/api/v1/order/cancel`, { idOrder: orderId });
+            // Fetch the order details to get the items and their quantities
+            const orderResponse = await axios.get(`${ORDER_BASEURL}/api/v1/order/${orderId}`);
+            const order = orderResponse.data;
+
+            // Iterate through each item in the order and update the stock
+            const updateStockPromises = order.items.map((item: OrderItem) =>
+                axios.patch(`${BOOK_BASEURL}/api/books/increaseStock/${item.idBook}/${item.amount}`)
+            );
+
+            // Wait for all stock updates to complete
+            await Promise.all(updateStockPromises);
+
+            // Proceed to cancel the order
+            await axios.patch(`${ORDER_BASEURL}/api/v1/order/cancel`, { idOrder: orderId });
+
+            // Fetch the updated orders
             fetchOrders();
+
+            // Show the cancel popup
             setShowPopupCancel(true);
         } catch (error) {
-            console.error('Failed to cancel item:', error);
+            console.error('Failed to cancel order:', error);
         }
     };
 
@@ -119,6 +148,27 @@ const PaymentPage: React.FC = () => {
 
     const handleAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setAddress(e.target.value);
+    };
+
+    useEffect(() => {
+        const initialize = async () => {
+            await fetchOrders();
+        };
+        initialize();
+    }, []);
+
+    useEffect(() => {
+        if (orders.length > 0) {
+            fetchBooksForOrders(orders);
+        }
+    }, [orders]);
+
+    const formatRupiah = (amount: number): string => {
+        const formatter = new Intl.NumberFormat('id-ID', {
+            style: 'currency',
+            currency: 'IDR'
+        });
+        return formatter.format(amount);
     };
 
     return (
@@ -153,7 +203,7 @@ const PaymentPage: React.FC = () => {
                         <div className="md:w-full">
                             {orders.length === 0 ? (
                                 <div className="bg-white rounded-lg shadow-md p-6 mb-4 text-center text-black">
-                                    Your cart is empty.
+                                    You have no pending orders at the moment.
                                 </div>
                             ) : (
                                 orders.map(order => (
@@ -181,19 +231,35 @@ const PaymentPage: React.FC = () => {
                                                     <td colSpan={4} className="text-center py-4 text-black">No items in this order.</td>
                                                 </tr>
                                             ) : (
-                                                order.items.sort((a, b) => a.idOrderItem - b.idOrderItem).map(item => (
-                                                    <tr key={item.idOrderItem}>
-                                                        <td className="py-4 text-black">
-                                                            <div className="flex items-center">
-                                                                <img className="h-16 w-16 mr-4" src="https://via.placeholder.com/150" alt="Product image" />
-                                                                <span className="font-semibold">{item.idBook}</span>
-                                                            </div>
-                                                        </td>
-                                                        <td className="py-4 text-black">{formatRupiah(item.price)}</td>
-                                                        <td className="py-4 text-black">{item.amount}</td>
-                                                        <td className="py-4 text-black">{formatRupiah(item.price * item.amount)}</td>
-                                                    </tr>
-                                                ))
+                                                order.items.sort((a, b) => a.idOrderItem - b.idOrderItem).map(item => {
+                                                    const book = books[item.idBook];
+                                                    return (
+                                                        <tr key={item.idOrderItem}>
+                                                            <td className="py-4 text-black">
+                                                                <div className="flex items-center">
+                                                                    {book ? (
+                                                                        <>
+                                                                            <img
+                                                                                className="h-16 w-16 mr-4"
+                                                                                src={book.bookPict}
+                                                                            />
+                                                                            <span className="font-semibold">
+                                                                                {book.title}
+                                                                            </span>
+                                                                        </>
+                                                                    ) : (
+                                                                        <span className="font-semibold">
+                                                                            Loading...
+                                                                        </span>
+                                                                    )}
+                                                                </div>
+                                                            </td>
+                                                            <td className="py-4 text-black">{formatRupiah(item.price)}</td>
+                                                            <td className="py-4 text-black">{item.amount}</td>
+                                                            <td className="py-4 text-black">{formatRupiah(item.price * item.amount)}</td>
+                                                        </tr>
+                                                    );
+                                                })
                                             )}
                                             </tbody>
                                         </table>
@@ -238,7 +304,7 @@ const PaymentPage: React.FC = () => {
                     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
                         <div className="bg-white rounded-lg p-6 text-center">
                             <FontAwesomeIcon icon={faCheckCircle} className="text-green-500 text-3xl mb-4" />
-                            <h2 className="text-xl font-semibold mb-4">Cancel is Successful</h2>
+                            <h2 className="text-xl font-semibold mb-4 text-black">Cancel is Successful</h2>
                             <button
                                 className="bg-green-500 text-white py-2 px-4 rounded-md"
                                 onClick={handleClosePopup}
@@ -249,11 +315,8 @@ const PaymentPage: React.FC = () => {
                     </div>
                 )}
             </div>
-            </>
-
+        </>
     );
 };
 
 export default PaymentPage;
-
-
