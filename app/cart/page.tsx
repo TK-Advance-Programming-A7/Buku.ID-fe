@@ -4,6 +4,8 @@ import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { Order, OrderItem } from './types';
+import { Book } from '@/app/book/types';
+import CartSummary from '@/app/components/CartSummary';
 import axios from "axios";
 
 const CartPage: React.FC = () => {
@@ -13,7 +15,7 @@ const CartPage: React.FC = () => {
 
     const fetchOrders = async () => {
         try {
-            const userId = 123; // Example user ID
+            const userId = "123"; // Example user ID
             const status = "Waiting Checkout";
             const response = await axios.get(`${baseURL}/api/v1/order/users/status?userId=${userId}&status=${status}`);
             setOrders(response.data);
@@ -113,7 +115,7 @@ const CartPage: React.FC = () => {
                                                         </button>
                                                     </div>
                                                 </td>
-                                                <td className="py-4 text-black">{formatRupiah(item.price)}</td>
+                                                <td className="py-4 text-black">{formatRupiah(item.totalPrice)}</td>
                                                 <td className="py-4 text-black">
                                                     <button type="button" className="ml-2 text-sm px-2 py-1"
                                                             onClick={() => handleDeleteItem(order.idOrder, item.idOrderItem)}>
@@ -129,19 +131,9 @@ const CartPage: React.FC = () => {
                         </div>
                     </div>
                     <div className="md:w-1/4 text-black">
-                        <div className="bg-white rounded-lg shadow-md p-6">
-                            <h2 className="text-lg font-semibold mb-4">Summary</h2>
-                            <div className="flex justify-between mb-2">
-                                <span>Subtotal</span>
-                                <span>{formatRupiah(calculateTotal())}</span>
-                            </div>
-                            <hr className="my-2" />
-                            <div className="flex justify-between mb-2">
-                                <span className="font-semibold">Total</span>
-                                <span className="font-semibold">{formatRupiah(calculateTotal())}</span>
-                            </div>
-                            <button className="bg-blue-500 text-white py-2 px-4 rounded-lg mt-4 w-full">Checkout</button>
-                        </div>
+                        {orders.map(order => (
+                            <CartSummary key={order.idOrder} total={formatRupiah(order.totalPrice)} idOrder={order.idOrder}/>
+                        ))}
                     </div>
                 </div>
             </div>
