@@ -3,6 +3,7 @@
 import {useParams, useRouter} from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { Book } from '../types';
+import AddToCartButton from '@/app/components/AddToCartButton';
 
 const BookDetailPage: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -57,6 +58,7 @@ const BookDetailPage: React.FC = () => {
                         <p className="text-gray-700 mb-2"><span className="font-semibold">Price:</span> ${book.price.toFixed(2)}</p>
                         <p className="text-gray-700 mb-2"><span className="font-semibold">Stock:</span> {book.stock}</p>
                         <p className="text-gray-700 mb-4"><span className="font-semibold">Description:</span> {book.desc}</p>
+                        <AddToCartButton bookId={book.idBook} price={book.price} stock={book.stock} />
                     </div>
                 </div>
             </div>

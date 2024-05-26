@@ -13,6 +13,7 @@ const BookPage: React.FC = () => {
 
     const baseURL = 'http://localhost:8080';
 
+
     const fetchBooks = async () => {
         try {
             const response = await fetch(`${baseURL}/api/books`);
@@ -74,7 +75,7 @@ const BookPage: React.FC = () => {
             <div className="container mx-auto px-4 mt-20">
                 {filteredBooks.length === 0 && (
                     <div className="text-center text-black text-lg mt-8 font-bold">
-                        Sorry, we can't find what you're looking for
+                        Sorry, we can`t find what you`re looking for
                     </div>
                 )}
                 <div className="flex flex-wrap gap-4 justify-center">
