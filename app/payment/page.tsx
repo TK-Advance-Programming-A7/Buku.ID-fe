@@ -18,8 +18,6 @@ const PaymentPage: React.FC = () => {
 
     const [successMessage, setSuccessMessage] = useState(false); // State for success message
 
-    const baseURL = 'http://localhost:8080';
-
     const fetchOrders = async () => {
         let value = null;
         try {
