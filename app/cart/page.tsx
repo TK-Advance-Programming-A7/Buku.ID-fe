@@ -15,6 +15,10 @@ const CartPage: React.FC = () => {
     const [orders, setOrders] = useState<Order[]>([]);
     const [books, setBooks] = useState<{ [key: number]: Book }>({});
     const [email, setEmail] = useState("");
+    const [showCheckout, setShowCheckout] = useState(true);
+    const [showIncrease, setShowIncrease] = useState(true);
+    const [showDecrease, setShowDecrease] = useState(true);
+
 
     const fetchOrders = async () => {
         let value = null;
@@ -102,9 +106,13 @@ const CartPage: React.FC = () => {
         }
     };
 
-    const handleIncreaseItem = async (orderId: number, bookId: number, price: number) => {
+    const handleIncreaseItem = async (orderId: number, bookId: number, price: number, item: number) => {
         try {
             await axios.post(`${ORDER_BASEURL}/api/v1/order/book/add`, { idOrder: orderId, idBook: bookId, quantity: 1, price: price });
+            const book = books[bookId];
+            if(book.stock = item+1){
+                setShowIncrease(false);
+            }
             fetchOrders();
         } catch (error) {
             console.error('Failed to increase item:', error);
@@ -193,13 +201,22 @@ const CartPage: React.FC = () => {
                                                                 <div className="flex items-center">
                                                                     <button
                                                                         className="border rounded-md py-2 px-4 mr-2 text-black"
-                                                                        onClick={() => handleDecreaseItem(order.idOrder, item.idBook)}>-
+                                                                        onClick={() => handleDecreaseItem(order.idOrder, item.idBook)}
+                                                                        disabled={!showDecrease}
+                                                                    >
+                                                                        -
                                                                     </button>
                                                                     <span
-                                                                        className="text-center w-8 text-black">{item.amount}</span>
+                                                                        className="text-center w-8 text-black"
+                                                                    >
+                                                                        {item.amount}
+                                                                    </span>
                                                                     <button
                                                                         className="border rounded-md py-2 px-4 ml-2 text-black"
-                                                                        onClick={() => handleIncreaseItem(order.idOrder, item.idBook, item.price)}>+
+                                                                        onClick={() => handleIncreaseItem(order.idOrder, item.idBook, item.price, item.amount)}
+                                                                        disabled={!showIncrease}
+                                                                    >
+                                                                        +
                                                                     </button>
                                                                 </div>
                                                             </td>
@@ -232,7 +249,9 @@ const CartPage: React.FC = () => {
                                     <span className="font-semibold">{formatRupiah(calculateTotal())}</span>
                                 </div>
                                 <button className="bg-blue-500 text-white py-2 px-4 rounded-lg mt-4 w-full"
-                                        onClick={() => handleCheckout(orders[0].idOrder)}>Checkout
+                                        onClick={() => handleCheckout(orders[0].idOrder)}
+                                        disabled={!showCheckout}>
+                                    Checkout
                                 </button>
                             </div>
                         </div>
