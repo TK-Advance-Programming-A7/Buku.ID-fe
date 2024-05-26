@@ -13,9 +13,29 @@ const CartPage: React.FC = () => {
 
     const baseURL = 'http://localhost:8080';
 
+    const [email, setEmail] = useState("");
+
     const fetchOrders = async () => {
+        let value = null;
         try {
-            const userId = "vinka.aeris@gmail.com"; // Example user ID
+            value = localStorage.getItem("token") || "";
+            console.log(value);
+            if (!value) {
+                return;
+            }
+            const responseLog = await fetch("http://localhost:8081/api/user/me", {
+                headers: {
+                    Authorization: `Bearer ${value}`,
+                },
+            });
+            let emailUser = null;
+            if (responseLog.ok) {
+                const userData = await responseLog.json();
+                setEmail(userData.email); // Set only the email
+                emailUser = userData.email;
+            }
+
+            const userId = emailUser; // Example user ID
             const status = "Waiting Checkout";
             const response = await axios.get(`${baseURL}/api/v1/order/users/status?userId=${userId}&status=${status}`);
             setOrders(response.data);
@@ -132,8 +152,7 @@ const CartPage: React.FC = () => {
                     </div>
                     <div className="md:w-1/4 text-black">
                         {orders.map(order => (
-                            <CartSummary key={order.idOrder} total={formatRupiah(order.totalPrice)}
-                                         idOrder={order.idOrder}/>
+                            <CartSummary key={order.idOrder} total={formatRupiah(order.totalPrice)} idOrder={order.idOrder}/>
                         ))}
                     </div>
                 </div>
@@ -143,4 +162,5 @@ const CartPage: React.FC = () => {
 };
 
 export default CartPage;
+
 
