@@ -9,6 +9,8 @@ import { BOOK_BASEURL } from '@/app/const';
 const AddBookPage: React.FC = () => {
     const router = useRouter();
 
+    const [showPopup, setShowPopup] = useState(false);
+
     const handleSubmit = async (formData: Book) => {
         try {
             const response = await fetch(`${BOOK_BASEURL}/api/books`, {
@@ -21,7 +23,11 @@ const AddBookPage: React.FC = () => {
             if (!response.ok) {
                 throw new Error("Failed to add book");
             }
-            router.push('/book');
+            setShowPopup(true);
+            setTimeout(() => {
+                setShowPopup(false);
+                router.push('/book');
+            }, 5000); // Hide popup after 5 seconds and navigate
         } catch (error) {
             console.error("There was a problem adding the book:", error);
         }
@@ -47,6 +53,11 @@ const AddBookPage: React.FC = () => {
             <div className="container mx-auto px-4">
                 <h1 className="text-2xl font-semibold mb-4 text-black">Add New Book</h1>
                 <BookForm initialFormData={initialFormData} onSubmit={handleSubmit} />
+                {showPopup && (
+                    <div className="fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded shadow-lg">
+                        Book added successfully!
+                    </div>
+                )}
             </div>
         </div>
     );

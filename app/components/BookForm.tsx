@@ -8,6 +8,7 @@ interface BookFormProps {
 
 const BookForm: React.FC<BookFormProps> = ({ initialFormData, onSubmit }) => {
     const [formData, setFormData] = useState<Book>(initialFormData);
+    const [errors, setErrors] = useState<{ stock?: string; price?: string }>({});
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
@@ -19,6 +20,28 @@ const BookForm: React.FC<BookFormProps> = ({ initialFormData, onSubmit }) => {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+
+        // Reset errors
+        setErrors({});
+
+        // Validate stock and price
+        let hasError = false;
+        const newErrors: { stock?: string; price?: string } = {};
+
+        if (formData.stock < 1) {
+            newErrors.stock = "Stock must be at least 1.";
+            hasError = true;
+        }
+
+        if (formData.price < 1) {
+            newErrors.price = "Price must be at least 1.";
+            hasError = true;
+        }
+
+        setErrors(newErrors);
+
+        if (hasError) return;
+
         onSubmit(formData);
     };
 
@@ -63,8 +86,26 @@ const BookForm: React.FC<BookFormProps> = ({ initialFormData, onSubmit }) => {
                     name="stock"
                     value={formData.stock}
                     onChange={handleChange}
+                    min="1"
                     required
                 />
+                {errors.stock && <p className="text-red-500 text-xs italic">{errors.stock}</p>}
+            </div>
+            <div className="mb-4">
+                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="price">
+                    Price
+                </label>
+                <input
+                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    id="price"
+                    type="number"
+                    name="price"
+                    value={formData.price}
+                    onChange={handleChange}
+                    min="1"
+                    required
+                />
+                {errors.price && <p className="text-red-500 text-xs italic">{errors.price}</p>}
             </div>
             <div className="mb-4">
                 <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="isbn">
