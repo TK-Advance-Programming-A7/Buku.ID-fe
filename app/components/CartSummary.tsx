@@ -1,10 +1,11 @@
 import React from 'react';
 import axios from 'axios';
-import { useRouter } from 'next/router';
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 const CartSummary: React.FC<{ total: string; idOrder: number }> = ({ total, idOrder }) => {
+    const router = useRouter(); // Use the useRouter hook to get access to the router object
     const baseURL = 'http://localhost:8080';
-    const router = useRouter();
 
     const handleCheckout = async () => {
         try {

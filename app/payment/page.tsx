@@ -35,7 +35,7 @@ const PaymentPage: React.FC = () => {
             }
 
             const userId = emailUser; // Example user ID
-            const status = "Waiting Checkout";
+            const status = "Waiting Payment";
             const response = await axios.get(`${baseURL}/api/v1/order/users/status?userId=${userId}&status=${status}`);
             setOrders(response.data);
         } catch (error) {
