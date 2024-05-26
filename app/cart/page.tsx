@@ -40,7 +40,7 @@ const CartPage: React.FC = () => {
                 params: { userId, status },
             });
             setOrders(response.data);
-        } catch (error) {
+        } catch (error) {ull
             console.error('Failed to fetch orders:', error);
         }
     };
@@ -118,10 +118,6 @@ const CartPage: React.FC = () => {
             currency: 'IDR',
         });
         return formatter.format(amount);
-    };
-
-    const calculateTotal = (): number => {
-        return orders.reduce((total, order) => total + order.totalPrice, 0);
     };
 
     return (
