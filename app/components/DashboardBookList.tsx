@@ -55,43 +55,35 @@ const AdminDashboard: React.FC = () => {
 
   return (
     <>
-      <Navbar />
-      <div className="mx-auto pt-24 container p-4 md:p-6 lg:p-12">
-        <div className="flex flex-wrap ">
-          <div className="w-full md:w-full xl:w-full p-4">
-            <h2 className="text-center text-2xl font-bold mb-4">Books</h2>
-            <table className="table-auto w-full text-sm">
-              <thead>
-                <tr>
-                  <th className="px-4 py-2">Title</th>
-                  <th className="px-4 py-2">Writer</th>
-                  <th className="px-4 py-2">Publisher</th>
-                  <th className="px-4 py-2">Price</th>
-                  <th className="px-4 py-2">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {books.map(book => (
-                  <tr key={book.isbn} className="hover:bg-gray-800">
-                    <td className="px-4 py-2">{book.title}</td>
-                    <td className="px-4 py-2">{book.author}</td>
-                    <td className="px-4 py-2">{book.publisher}</td>
-                    <td className="px-4 py-2">{book.price}</td>
-                    <td className="flex px-4 py-2">
-                      <button className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-4 mx-2 rounded" onClick={() => editBook(book.idBook)}>
-                        Edit
-                      </button>
-                      <button className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 mx-2 rounded" onClick={() => deleteBook(book.idBook)}>
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
+      <table className="table-auto w-full text-sm">
+        <thead>
+          <tr>
+            <th className="px-4 py-2">Title</th>
+            <th className="px-4 py-2">Writer</th>
+            <th className="px-4 py-2">Publisher</th>
+            <th className="px-4 py-2">Price</th>
+            <th className="px-4 py-2">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {books.map(book => (
+            <tr key={book.isbn} className="hover:bg-gray-800">
+              <td className="px-4 py-2">{book.title}</td>
+              <td className="px-4 py-2">{book.author}</td>
+              <td className="px-4 py-2">{book.publisher}</td>
+              <td className="px-4 py-2">{book.price}</td>
+              <td className="flex px-4 py-2">
+                <button className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-4 mx-2 rounded" onClick={() => editBook(book.idBook)}>
+                  Edit
+                </button>
+                <button className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 mx-2 rounded" onClick={() => deleteBook(book.idBook)}>
+                  Delete
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </>
   );
 };

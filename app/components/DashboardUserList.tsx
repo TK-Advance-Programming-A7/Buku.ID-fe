@@ -29,10 +29,10 @@ const AdminDashboard: React.FC = () => {
 
     const viewUser = (email: string) => {
         fetch(`http://localhost:8080/api/user/get/${email}`)
-        .then(response => response.json())
-        .then(user => {
-            return setSelectedUser(user);
-        })
+            .then(response => response.json())
+            .then(user => {
+                return setSelectedUser(user);
+            })
     };
 
     const customStyles = {
@@ -52,36 +52,31 @@ const AdminDashboard: React.FC = () => {
 
     return (
         <>
-            <Navbar />
-            <div className="mx-auto pt-24 container p-4 md:p-6 lg:p-12">
-                <div className="w-full p-4">
-                    <h2 className="text-2xl text-center font-bold mb-4">Users</h2>
-                    <table className="table-auto w-full text-sm">
-                        <thead>
-                            <tr>
-                                <th className="px-4 py-2">Name</th>
-                                <th className="px-4 py-2">Email</th>
-                                <th className="px-4 py-2">Role</th>
-                                <th className="px-4 py-2">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {users.map(user => (
-                                <tr key={user.id} className="hover:bg-gray-800">
-                                    <td className="px-4 py-2">{user.fullName}</td>
-                                    <td className="px-4 py-2">{user.email}</td>
-                                    <td className="px-4 py-2">{user.role}</td>
-                                    <td className="flex px-4 py-2 mx-auto">
-                                        <button className="bg-green-500 hover:bg-green-600 text-white font-bold mx-auto py-2 px-4 rounded" onClick={() => viewUser(user.email)}>
-                                            View
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+
+            <table className="table-auto w-full text-sm">
+                <thead>
+                    <tr>
+                        <th className="px-4 py-2">Name</th>
+                        <th className="px-4 py-2">Email</th>
+                        <th className="px-4 py-2">Role</th>
+                        <th className="px-4 py-2">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {users.map(user => (
+                        <tr key={user.id} className="hover:bg-gray-800">
+                            <td className="px-4 py-2">{user.fullName}</td>
+                            <td className="px-4 py-2">{user.email}</td>
+                            <td className="px-4 py-2">{user.role}</td>
+                            <td className="flex px-4 py-2 mx-auto">
+                                <button className="bg-green-500 hover:bg-green-600 text-white font-bold mx-auto py-2 px-4 rounded" onClick={() => viewUser(user.email)}>
+                                    View
+                                </button>
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
             <Modal
                 isOpen={selectedUser !== null}
                 onRequestClose={() => setSelectedUser(null)}
