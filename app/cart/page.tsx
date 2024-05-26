@@ -85,7 +85,18 @@ const CartPage: React.FC = () => {
             }
         });
 
+        let checkoutEnabled = true;
+        orders.forEach(order => {
+            order.items.forEach(item => {
+                const book = booksMap[item.idBook];
+                if (book && item.amount > book.stock) {
+                    checkoutEnabled = false;
+                }
+            });
+        });
+
         setBooks(booksMap);
+        setShowCheckout(false);
     };
 
     const handleDeleteItem = async (orderId: number, itemId: number) => {
@@ -97,10 +108,14 @@ const CartPage: React.FC = () => {
         }
     };
 
-    const handleDecreaseItem = async (orderId: number, bookId: number) => {
+    const handleDecreaseItem = async (orderId: number, bookId: number, item: number) => {
         try {
             await axios.patch(`${ORDER_BASEURL}/api/v1/order/book/decrease`, { idOrder: orderId, idBook: bookId, quantity: 1 });
             fetchOrders();
+            const book = books[bookId];
+            if(book.stock < item+1){
+                setShowIncrease(true);
+            }
         } catch (error) {
             console.error('Failed to decrease item:', error);
         }
@@ -112,6 +127,10 @@ const CartPage: React.FC = () => {
             const book = books[bookId];
             if(book.stock = item+1){
                 setShowIncrease(false);
+            }
+            else if (book.stock > item){
+                setShowIncrease(false);
+                setShowCheckout(false);
             }
             fetchOrders();
         } catch (error) {
@@ -201,7 +220,7 @@ const CartPage: React.FC = () => {
                                                                 <div className="flex items-center">
                                                                     <button
                                                                         className="border rounded-md py-2 px-4 mr-2 text-black"
-                                                                        onClick={() => handleDecreaseItem(order.idOrder, item.idBook)}
+                                                                        onClick={() => handleDecreaseItem(order.idOrder, item.idBook, item.amount)}
                                                                         disabled={!showDecrease}
                                                                     >
                                                                         -
