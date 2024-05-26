@@ -122,7 +122,7 @@ const PaymentPage: React.FC = () => {
 
             // Iterate through each item in the order and update the stock
             const updateStockPromises = order.items.map((item: OrderItem) =>
-                axios.put(`${BOOK_BASEURL}/api/books/increaseStock/${item.idBook}/${item.amount}`)
+                axios.patch(`${BOOK_BASEURL}/api/books/increaseStock/${item.idBook}/${item.amount}`)
             );
 
             // Wait for all stock updates to complete
