@@ -9,27 +9,24 @@ import { AUTH_BASEURL } from "../const";
 
 const Navbar = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
   const router = useRouter();
-
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     // Simulate an API call to check if the user is logged in
     const token = localStorage.getItem("token");
     setIsLoggedIn(!!token);
 
-    if(token != null){
-      fetch(`${AUTH_BASEURL}/api/user/me`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+    fetch(`${AUTH_BASEURL}/api/user/me`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }).then(response => response.json())
+      .then(data => {
+        if (data.role === 'ADMIN') {
+          setIsAdmin(true);
         }
-      }).then(response => {
-        console.log(response.json());
       });
-    }
-
   }, []);
 
   const handleLogout = () => {
@@ -71,6 +68,7 @@ const Navbar = () => {
           >
             {isLoggedIn ? (
                 <ul className="list-reset lg:flex justify-end flex-1 items-center">
+                  {isAdmin? 
                   <li className="mr-3">
                     <Link
                       className="inline-block text-white no-underline hover:text-gray-800 hover:text-underline py-2 px-4"
@@ -78,7 +76,8 @@ const Navbar = () => {
                     >
                       <FontAwesomeIcon icon={faChartLine} className="mr-1" /> Dashboard
                     </Link>
-                  </li>
+                  </li> : <></>
+                  }
                   <li className="mr-3">
                     <Link
                         className="inline-block text-white no-underline hover:text-gray-800 hover:text-underline py-2 px-4"
