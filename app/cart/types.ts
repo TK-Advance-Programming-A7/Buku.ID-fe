@@ -8,7 +8,7 @@ export interface OrderItem {
 
 export interface Order {
     idOrder: number;
-    idUser: number;
+    idUser: string;
     orderDate: string;
     address: string;
     items: OrderItem[];

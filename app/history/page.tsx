@@ -56,7 +56,9 @@ const HistoryPage: React.FC = () => {
                                                 Date: {new Date(order.orderDate).toLocaleDateString()}</p>
                                         </div>
                                         <div className="flex items-start">
-                                            <p className="text-black font-semibold">Total: {formatRupiah(order.totalPrice)}</p>
+                                            <p className="text-black font-semibold">Total: <span
+                                                className="font-normal text-gray-700 bg-gray-200 p-2 rounded-md">{formatRupiah(order.totalPrice)}</span>
+                                            </p>
                                         </div>
                                     </div>
                                     <table className="w-full mt-4">
@@ -94,6 +96,10 @@ const HistoryPage: React.FC = () => {
                                         )}
                                         </tbody>
                                     </table>
+                                    <h2 className="text-xl font-semibold mb-1 text-black">
+                                        Order is sent to: <span
+                                        className="font-normal text-gray-700 bg-gray-200 p-2 rounded-md">{order.address}</span>
+                                    </h2>
                                 </div>
                             ))
                         )}
