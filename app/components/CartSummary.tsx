@@ -1,18 +1,88 @@
 import React from 'react';
 import axios from 'axios';
-import { useRouter } from "next/navigation";
-import Link from "next/link";
+import { useRouter } from "next/router";
+import { AUTH_BASEURL, BOOK_BASEURL, ORDER_BASEURL } from '../const';
 
-const CartSummary: React.FC<{ total: string; idOrder: number }> = ({ total, idOrder }) => {
-    const router = useRouter(); // Use the useRouter hook to get access to the router object
+
+export interface OrderItem {
+    idOrderItem: number;
+    idBook: number;
+    amount: number;
+    price: number;
+    totalPrice: number;
+}
+
+export interface Order {
+    idOrder: number;
+    idUser: string;
+    orderDate: string;
+    address: string;
+    items: OrderItem[];
+    totalPrice: number;
+    cancelable: boolean;
+    status: string;
+}
+
+export interface Book {
+    idBook: number;
+    title: string;
+    author: string;
+    publisher: string;
+    price: number;
+    stock: number;
+    isbn: string;
+    bookPict: string;
+    publishDate: string;
+    category: string;
+    page: number;
+    desc: string;
+}
+
+interface Props {
+    total: string;
+    idOrder: number;
+    orders: Order[];
+    books: { [key: number]: Book }; // Menggunakan objek untuk mewakili koleksi buku
+}
+
+const CartSummary: React.FC<Props> = ({ total, idOrder, orders, books }) => {
+    const router = useRouter();
     const baseURL = 'http://localhost:8080';
 
     const handleCheckout = async () => {
         try {
-            const response = await axios.patch(`${baseURL}/api/v1/order/next`, { idOrder: idOrder });
-            console.log(response.data);
+            // Verifikasi stok buku sebelum checkout
+            let insufficientStock = false;
+            orders.forEach(order => {
+                order.items.forEach(item => {
+                    const book = books[item.idBook];
+                    if (book && book.stock < item.amount) {
+                        insufficientStock = true;
+                    }
+                });
+            });
+    
+            if (insufficientStock) {
+                console.error('Insufficient stock for one or more items.');
+                // Tampilkan pesan kesalahan atau lakukan tindakan yang sesuai
+                return;
+            }
+    
+            // Lakukan checkout jika stok cukup
+            await axios.patch(`${baseURL}/api/v1/order/next`, { idOrder: idOrder });
 
-            // Redirect the user to the payment page
+            // Kurangi stok buku
+            await Promise.all(orders.map(async order => {
+                await Promise.all(order.items.map(async item => {
+                    try {
+                        await axios.post(`${BOOK_BASEURL}/api/books/decreaseStock/${item.idBook}/${item.amount}`);
+                    } catch (error) {
+                        console.error(`Failed to decrease stock for book ${item.idBook}:`, error);
+                    }
+                }));
+            }));
+
+            // Redirect pengguna ke halaman pembayaran
             router.push('/payment');
         } catch (error) {
             console.error('Error during checkout:', error);

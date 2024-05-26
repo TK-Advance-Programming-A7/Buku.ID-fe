@@ -33,7 +33,7 @@ const CartPage: React.FC = () => {
                 emailUser = userData.email;
             }
 
-            const userId = emailUser; // Example user ID
+            const userId = emailUser; 
             const status = "Waiting Checkout";
             const response = await axios.get(`${ORDER_BASEURL}/api/v1/order/users/status`, {
                 params: { userId, status },
@@ -203,7 +203,7 @@ const CartPage: React.FC = () => {
                         <div className="md:w-1/4 text-black">
                             {orders.map(order => (
                                 <CartSummary key={order.idOrder} total={formatRupiah(order.totalPrice)}
-                                             idOrder={order.idOrder} />
+                                             idOrder={order.idOrder} orders={orders} books={books}/>
                             ))}
                         </div>
                     </div>
