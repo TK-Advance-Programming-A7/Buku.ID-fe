@@ -1,7 +1,6 @@
 "use client"
 
 import React, { useEffect, useState } from 'react';
-import DashboardNavbar from '@/app/components/DashboardNavbar'
 import { useRouter } from 'next/navigation';
 import Navbar from '@/app/components/navbar';
 

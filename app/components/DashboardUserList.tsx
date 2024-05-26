@@ -1,7 +1,6 @@
 "use client"
 
 import React, { useEffect, useState } from 'react';
-import DashboardNavbar from '@/app/components/DashboardNavbar'
 import Modal from 'react-modal';
 import Navbar from './navbar';
 
