@@ -6,6 +6,7 @@ import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { Order, OrderItem } from './types';
 import { Book } from '@/app/book/types';
 import CartSummary from '@/app/components/CartSummary';
+import AddToCartForm from '@/app/components/AddToCartForm';
 import axios from "axios";
 
 const CartPage: React.FC = () => {
@@ -15,7 +16,7 @@ const CartPage: React.FC = () => {
 
     const fetchOrders = async () => {
         try {
-            const userId = "123"; // Example user ID
+            const userId = "vinka.aeris@gmail.com"; // Example user ID
             const status = "Waiting Checkout";
             const response = await axios.get(`${baseURL}/api/v1/order/users/status?userId=${userId}&status=${status}`);
             setOrders(response.data);
@@ -132,7 +133,8 @@ const CartPage: React.FC = () => {
                     </div>
                     <div className="md:w-1/4 text-black">
                         {orders.map(order => (
-                            <CartSummary key={order.idOrder} total={formatRupiah(order.totalPrice)} idOrder={order.idOrder}/>
+                            <CartSummary key={order.idOrder} total={formatRupiah(order.totalPrice)}
+                                         idOrder={order.idOrder}/>
                         ))}
                     </div>
                 </div>
@@ -142,5 +144,4 @@ const CartPage: React.FC = () => {
 };
 
 export default CartPage;
-
 
