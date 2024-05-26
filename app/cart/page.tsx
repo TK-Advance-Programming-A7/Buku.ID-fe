@@ -5,14 +5,20 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { Order, OrderItem, Book } from './types';
 import Navbar from '@/app/components/navbar'
+import { useRouter } from "next/navigation";
 import CartSummary from '@/app/components/CartSummary';
 import axios from "axios";
 import { AUTH_BASEURL, BOOK_BASEURL, ORDER_BASEURL } from '../const';
 
 const CartPage: React.FC = () => {
+    const router = useRouter(); // Use the useRouter hook to get access to the router object
     const [orders, setOrders] = useState<Order[]>([]);
     const [books, setBooks] = useState<{ [key: number]: Book }>({});
     const [email, setEmail] = useState("");
+    const [showCheckout, setShowCheckout] = useState(true);
+    const [showIncrease, setShowIncrease] = useState(true);
+    const [showDecrease, setShowDecrease] = useState(true);
+
 
     const fetchOrders = async () => {
         let value = null;
@@ -44,6 +50,17 @@ const CartPage: React.FC = () => {
         }
     };
 
+    const handleCheckout = async (orderId: number) => {
+        try {
+            await axios.patch(`${ORDER_BASEURL}/api/v1/order/next`, { idOrder: orderId });
+
+            router.push('/payment');
+        } catch (error) {
+            console.error('Error during checkout:', error);
+        }
+    };
+
+
     const fetchBook = async (id: number): Promise<Book | null> => {
         try {
             const response = await axios.get(`${BOOK_BASEURL}/api/books/${id}`);
@@ -68,7 +85,18 @@ const CartPage: React.FC = () => {
             }
         });
 
+        let checkoutEnabled = true;
+        orders.forEach(order => {
+            order.items.forEach(item => {
+                const book = booksMap[item.idBook];
+                if (book && item.amount > book.stock) {
+                    checkoutEnabled = false;
+                }
+            });
+        });
+
         setBooks(booksMap);
+        setShowCheckout(false);
     };
 
     const handleDeleteItem = async (orderId: number, itemId: number) => {
@@ -80,18 +108,30 @@ const CartPage: React.FC = () => {
         }
     };
 
-    const handleDecreaseItem = async (orderId: number, bookId: number) => {
+    const handleDecreaseItem = async (orderId: number, bookId: number, item: number) => {
         try {
             await axios.patch(`${ORDER_BASEURL}/api/v1/order/book/decrease`, { idOrder: orderId, idBook: bookId, quantity: 1 });
             fetchOrders();
+            const book = books[bookId];
+            if(book.stock < item+1){
+                setShowIncrease(true);
+            }
         } catch (error) {
             console.error('Failed to decrease item:', error);
         }
     };
 
-    const handleIncreaseItem = async (orderId: number, bookId: number, price: number) => {
+    const handleIncreaseItem = async (orderId: number, bookId: number, price: number, item: number) => {
         try {
             await axios.post(`${ORDER_BASEURL}/api/v1/order/book/add`, { idOrder: orderId, idBook: bookId, quantity: 1, price: price });
+            const book = books[bookId];
+            if(book.stock = item+1){
+                setShowIncrease(false);
+            }
+            else if (book.stock > item){
+                setShowIncrease(false);
+                setShowCheckout(false);
+            }
             fetchOrders();
         } catch (error) {
             console.error('Failed to increase item:', error);
@@ -117,6 +157,10 @@ const CartPage: React.FC = () => {
             currency: 'IDR',
         });
         return formatter.format(amount);
+    };
+
+    const calculateTotal = (): number => {
+        return orders.reduce((total, order) => total + order.totalPrice, 0);
     };
 
     return (
@@ -174,13 +218,24 @@ const CartPage: React.FC = () => {
                                                             <td className="py-4 text-black">{formatRupiah(item.price)}</td>
                                                             <td className="py-4">
                                                                 <div className="flex items-center">
-                                                                    <button className="border rounded-md py-2 px-4 mr-2 text-black"
-                                                                            onClick={() => handleDecreaseItem(order.idOrder, item.idBook)}>-
+                                                                    <button
+                                                                        className="border rounded-md py-2 px-4 mr-2 text-black"
+                                                                        onClick={() => handleDecreaseItem(order.idOrder, item.idBook, item.amount)}
+                                                                        disabled={!showDecrease}
+                                                                    >
+                                                                        -
                                                                     </button>
                                                                     <span
-                                                                        className="text-center w-8 text-black">{item.amount}</span>
-                                                                    <button className="border rounded-md py-2 px-4 ml-2 text-black"
-                                                                            onClick={() => handleIncreaseItem(order.idOrder, item.idBook, item.price)}>+
+                                                                        className="text-center w-8 text-black"
+                                                                    >
+                                                                        {item.amount}
+                                                                    </span>
+                                                                    <button
+                                                                        className="border rounded-md py-2 px-4 ml-2 text-black"
+                                                                        onClick={() => handleIncreaseItem(order.idOrder, item.idBook, item.price, item.amount)}
+                                                                        disabled={!showIncrease}
+                                                                    >
+                                                                        +
                                                                     </button>
                                                                 </div>
                                                             </td>
@@ -188,7 +243,7 @@ const CartPage: React.FC = () => {
                                                             <td className="py-4 text-black">
                                                                 <button type="button" className="ml-2 text-sm px-2 py-1"
                                                                         onClick={() => handleDeleteItem(order.idOrder, item.idOrderItem)}>
-                                                                    <FontAwesomeIcon icon={faTrash} /> Delete
+                                                                    <FontAwesomeIcon icon={faTrash}/> Delete
                                                                 </button>
                                                             </td>
                                                         </tr>
@@ -201,10 +256,23 @@ const CartPage: React.FC = () => {
                             </div>
                         </div>
                         <div className="md:w-1/4 text-black">
-                            {orders.map(order => (
-                                <CartSummary key={order.idOrder} total={formatRupiah(order.totalPrice)}
-                                             idOrder={order.idOrder} orders={orders} books={books}/>
-                            ))}
+                            <div className="bg-white rounded-lg shadow-md p-6">
+                                <h2 className="text-lg font-semibold mb-4">Summary</h2>
+                                <div className="flex justify-between mb-2">
+                                    <span>Subtotal</span>
+                                    <span>{formatRupiah(calculateTotal())}</span>
+                                </div>
+                                <hr className="my-2"/>
+                                <div className="flex justify-between mb-2">
+                                    <span className="font-semibold">Total</span>
+                                    <span className="font-semibold">{formatRupiah(calculateTotal())}</span>
+                                </div>
+                                <button className="bg-blue-500 text-white py-2 px-4 rounded-lg mt-4 w-full"
+                                        onClick={() => handleCheckout(orders[0].idOrder)}
+                                        disabled={!showCheckout}>
+                                    Checkout
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
