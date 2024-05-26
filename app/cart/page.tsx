@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { Order, OrderItem } from './types';
+import Navbar from '@/app/components/navbar'
 import { Book } from '@/app/book/types';
 import CartSummary from '@/app/components/CartSummary';
 import axios from "axios";
@@ -88,76 +89,78 @@ const CartPage: React.FC = () => {
     };
 
     return (
-        <div className="bg-gray-100 h-screen py-8">
-            <div className="container mx-auto px-4">
-                <h1 className="text-2xl font-semibold mb-4 text-black">Shopping Page</h1>
-                <div className="flex flex-col md:flex-row gap-4">
-                    <div className="md:w-3/4">
-                        <div className="bg-white rounded-lg shadow-md p-6 mb-4">
-                            <table className="w-full">
-                                <thead>
-                                <tr>
-                                    <th className="text-left font-semibold text-black">Book</th>
-                                    <th className="text-left font-semibold text-black">Price</th>
-                                    <th className="text-left font-semibold text-black">Quantity</th>
-                                    <th className="text-left font-semibold text-black">Total</th>
-                                    <th className="text-left font-semibold text-black"></th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                {orders.length === 0 ? (
+        <><Navbar/>
+            <div className="bg-gray-100 h-screen py-8 pt-24">
+                <div className="container mx-auto px-4">
+                    <h1 className="text-2xl font-semibold mb-4 text-black">Shopping Page</h1>
+                    <div className="flex flex-col md:flex-row gap-4">
+                        <div className="md:w-3/4">
+                            <div className="bg-white rounded-lg shadow-md p-6 mb-4">
+                                <table className="w-full">
+                                    <thead>
                                     <tr>
-                                        <td colSpan={5} className="text-center py-4 text-black">
-                                            Your cart is empty.
-                                        </td>
+                                        <th className="text-left font-semibold text-black">Book</th>
+                                        <th className="text-left font-semibold text-black">Price</th>
+                                        <th className="text-left font-semibold text-black">Quantity</th>
+                                        <th className="text-left font-semibold text-black">Total</th>
+                                        <th className="text-left font-semibold text-black"></th>
                                     </tr>
-                                ) : (
-                                    orders.flatMap(order =>
-                                        order.items.sort((a: OrderItem, b: OrderItem) => a.idOrderItem - b.idOrderItem).map((item: OrderItem) => (
-                                            <tr key={item.idOrderItem}>
-                                                <td className="py-4 text-black">
-                                                    <div className="flex items-center">
-                                                        <img className="h-16 w-16 mr-4"
-                                                             src="https://via.placeholder.com/150" alt="Product image"/>
-                                                        <span className="font-semibold">{item.idBook}</span>
-                                                    </div>
-                                                </td>
-                                                <td className="py-4 text-black">{formatRupiah(item.price)}</td>
-                                                <td className="py-4">
-                                                    <div className="flex items-center">
-                                                        <button className="border rounded-md py-2 px-4 mr-2 text-black"
-                                                                onClick={() => handleDecreaseItem(order.idOrder, item.idBook)}>-
+                                    </thead>
+                                    <tbody>
+                                    {orders.length === 0 ? (
+                                        <tr>
+                                            <td colSpan={5} className="text-center py-4 text-black">
+                                                Your cart is empty.
+                                            </td>
+                                        </tr>
+                                    ) : (
+                                        orders.flatMap(order => order.items.sort((a: OrderItem, b: OrderItem) => a.idOrderItem - b.idOrderItem).map((item: OrderItem) => (
+                                                <tr key={item.idOrderItem}>
+                                                    <td className="py-4 text-black">
+                                                        <div className="flex items-center">
+                                                            <img className="h-16 w-16 mr-4"
+                                                                 src="https://via.placeholder.com/150" alt="Product image"/>
+                                                            <span className="font-semibold">{item.idBook}</span>
+                                                        </div>
+                                                    </td>
+                                                    <td className="py-4 text-black">{formatRupiah(item.price)}</td>
+                                                    <td className="py-4">
+                                                        <div className="flex items-center">
+                                                            <button className="border rounded-md py-2 px-4 mr-2 text-black"
+                                                                    onClick={() => handleDecreaseItem(order.idOrder, item.idBook)}>-
+                                                            </button>
+                                                            <span
+                                                                className="text-center w-8 text-black">{item.amount}</span>
+                                                            <button className="border rounded-md py-2 px-4 ml-2 text-black"
+                                                                    onClick={() => handleIncreaseItem(order.idOrder, item.idBook, item.price)}>+
+                                                            </button>
+                                                        </div>
+                                                    </td>
+                                                    <td className="py-4 text-black">{formatRupiah(item.totalPrice)}</td>
+                                                    <td className="py-4 text-black">
+                                                        <button type="button" className="ml-2 text-sm px-2 py-1"
+                                                                onClick={() => handleDeleteItem(order.idOrder, item.idOrderItem)}>
+                                                            <FontAwesomeIcon icon={faTrash}/> Delete
                                                         </button>
-                                                        <span
-                                                            className="text-center w-8 text-black">{item.amount}</span>
-                                                        <button className="border rounded-md py-2 px-4 ml-2 text-black"
-                                                                onClick={() => handleIncreaseItem(order.idOrder, item.idBook, item.price)}>+
-                                                        </button>
-                                                    </div>
-                                                </td>
-                                                <td className="py-4 text-black">{formatRupiah(item.totalPrice)}</td>
-                                                <td className="py-4 text-black">
-                                                    <button type="button" className="ml-2 text-sm px-2 py-1"
-                                                            onClick={() => handleDeleteItem(order.idOrder, item.idOrderItem)}>
-                                                        <FontAwesomeIcon icon={faTrash}/> Delete
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        ))
-                                    )
-                                )}
-                                </tbody>
-                            </table>
+                                                    </td>
+                                                </tr>
+                                            ))
+                                        )
+                                    )}
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
-                    </div>
-                    <div className="md:w-1/4 text-black">
-                        {orders.map(order => (
-                            <CartSummary key={order.idOrder} total={formatRupiah(order.totalPrice)} idOrder={order.idOrder}/>
-                        ))}
+                        <div className="md:w-1/4 text-black">
+                            {orders.map(order => (
+                                <CartSummary key={order.idOrder} total={formatRupiah(order.totalPrice)}
+                                             idOrder={order.idOrder}/>
+                            ))}
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </>
     );
 };
 
