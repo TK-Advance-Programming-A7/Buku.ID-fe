@@ -10,7 +10,7 @@ const BookDetailPage: React.FC = () => {
     const [book, setBook] = useState<Book>();
     const [loading, setLoading] = useState(true);
 
-    const baseURL = 'http://localhost:8082';
+    const baseURL = 'http://localhost:8080';
 
     useEffect(() => {
         const fetchBook = async () => {
